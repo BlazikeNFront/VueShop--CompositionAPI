@@ -77,13 +77,143 @@
   </div>
 </template>
 <script>
+import { ref, reactive, computed } from "vue";
+import { useStore } from "vuex";
 import DropDown from "../common/dropDown.vue";
 export default {
   components: {
     DropDown,
   },
   emits: ["exitButton"],
-  data() {
+  setup(props, context) {
+    const store = useStore();
+    const newAddressForm = reactive({
+      name: { value: "", error: false },
+      surname: { value: "", error: false },
+      address: { value: "", error: false },
+    });
+
+    const formErrorMsg = ref(null);
+    const addressUpdateResult = ref(null);
+    const formLoader = ref(false);
+
+    const userAddressList = computed(() => {
+      return store.getters["UserAuth/getAllUserAddresses"];
+    });
+
+    const createDropDownListItems = computed(() => {
+      return this.userAddressList.map(
+        (element) => `${element.name} ${element.surname} ${element.address}`
+      );
+    });
+
+    const createDefaultDropdownValue = computed(() => {
+      if (store.getters["UserAuth/getLastUsedAddress"]) {
+        const { name, surname, address } = store.getters[
+          "UserAuth/getLastUsedAddress"
+        ];
+        return `${name} ${surname} ${address}`;
+      } else {
+        return createDropDownListItems.value[0];
+      }
+    });
+
+    function setUserAddress(category, index) {
+      const addressObject = this.userAddressList[index];
+      this.$store.dispatch("UserAuth/setLastUsedUserAddress", addressObject);
+      context.emit("exitButton");
+    }
+
+    function clearFormError() {
+      this.formErrorMsg = null;
+      for (let key in this.newAddressForm) {
+        this.newAddressForm[key].error = false;
+      }
+    }
+
+    async function addNewAddress() {
+      try {
+        if (formValidation() === false) {
+          return;
+        }
+
+        formLoader.value = true;
+        const payload = {
+          token: store.getters["UserAuth/getToken"].token,
+          name: newAddressForm.name.value,
+          surname: newAddressForm.surname.value,
+          address: newAddressForm.address.value,
+        };
+        const postResult = await fetch("http://localhost:3000/addUserAddress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: await JSON.stringify(payload),
+        });
+        if (postResult.status !== 200) {
+          formLoader.value = false;
+          throw new Error("Server did not accepted address");
+        } else {
+          formLoader.value = false;
+          addressUpdateResult.value = "Address added successfully";
+          clearFormError();
+          clearUserInputs();
+        }
+      } catch (err) {
+        formLoader.value = false;
+        store.dispatch("ErrorHandler/showError", err.message);
+      }
+    }
+    function clearUserInputs() {
+      for (let key in newAddressForm) {
+        newAddressForm[key].value = "";
+      }
+    }
+    function formValidation() {
+      const { name, surname, address } = newAddressForm;
+
+      const regexOnlyLetters = /^[A-Za-z'/s]+$/;
+      const regexForAddress = /^[\sA-Za-z0-9-']+$/;
+
+      if (
+        !regexOnlyLetters.test(name.value) ||
+        newAddressForm.name.value.length < 2
+      ) {
+        newAddressForm.name.error = true;
+        formErrorMsg.value =
+          "Name field should contain at least 2 letters and also not contain special signs like ?,&";
+        return false;
+      }
+      if (
+        !regexOnlyLetters.test(surname.value) ||
+        newAddressForm.surname.value.length < 2
+      ) {
+        newAddressForm.surname.error = true;
+        formErrorMsg.value =
+          "Surname field should contain at least 2 letters and also not contain special signs like ?,&";
+        return false;
+      }
+      if (
+        !regexForAddress.test(address.value) ||
+        newAddressForm.address.value.length < 5
+      ) {
+        newAddressForm.address.error = true;
+        formErrorMsg.value =
+          "Surname field should contain at least 5 characters and also not contain special signs like ?,&";
+        return false;
+      }
+    }
+    return {
+      newAddressForm,
+      formErrorMsg,
+      addressUpdateResult,
+      formLoader,
+      userAddressList,
+      createDefaultDropdownValue,
+      setUserAddress,
+      addNewAddress,
+    };
+  },
+  /* data() {
     return {
       newAddressForm: {
         name: { value: "", error: false },
@@ -95,8 +225,8 @@ export default {
       addressUpdateResult: null,
       formLoader: false,
     };
-  },
-  computed: {
+  }, */
+  /* computed: {
     userAddressList() {
       return this.$store.getters["UserAuth/getAllUserAddresses"];
     },
@@ -115,8 +245,8 @@ export default {
         (element) => `${element.name} ${element.surname} ${element.address}`
       );
     },
-  },
-  methods: {
+  }, */
+  /* methods: {
     setUserAddress(category, index) {
       const addressObject = this.userAddressList[index];
 
@@ -200,7 +330,7 @@ export default {
         return false;
       }
     },
-  },
+  }, */
 };
 </script>
 <style lang="scss">

@@ -15,8 +15,16 @@
   </teleport>
 </template>
 <script>
+import { ref } from "vue";
 export default {
-  data() {
+  setup() {
+    let showAdd = ref(false);
+    function toggleAddBox() {
+      showAdd.value = !showAdd.value;
+    }
+    return { showAdd, toggleAddBox };
+  },
+  /* data() {
     return {
       showAdd: false,
     };
@@ -25,7 +33,7 @@ export default {
     toggleAddBox() {
       this.showAdd = !this.showAdd;
     },
-  },
+  }, */
 };
 </script>
 <style lang='scss'>

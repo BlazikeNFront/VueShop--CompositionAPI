@@ -66,9 +66,10 @@
   </div>
 </template>
 <script>
+import { computed } from "vue";
 export default {
-  computed: {
-    rodsLink() {
+  setup() {
+    const rodsLink = computed(() => {
       return {
         name: "search-for-product",
         params: {
@@ -78,8 +79,8 @@ export default {
           page: 1,
         },
       };
-    },
-    reelsLink() {
+    });
+    const reelsLink = computed(() => {
       return {
         name: "search-for-product",
         params: {
@@ -89,8 +90,8 @@ export default {
           page: 1,
         },
       };
-    },
-    luresLink() {
+    });
+    const luresLink = computed(() => {
       return {
         name: "search-for-product",
         params: {
@@ -100,8 +101,8 @@ export default {
           page: 1,
         },
       };
-    },
-    linesLink() {
+    });
+    const linesLink = computed(() => {
       return {
         name: "search-for-product",
         params: {
@@ -111,7 +112,8 @@ export default {
           page: 1,
         },
       };
-    },
+    });
+    return { rodsLink, reelsLink, luresLink, linesLink };
   },
 };
 </script>

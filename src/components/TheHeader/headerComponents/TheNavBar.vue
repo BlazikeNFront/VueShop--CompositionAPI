@@ -11,15 +11,19 @@
 </template>
 <script>
 import NavBarItem from "./navBarItem.vue";
-
+import { ref } from "vue";
 export default {
   components: {
     NavBarItem,
   },
-  data() {
-    return {
-      navBarItems: ["Spinning", "Bait Fishing", "Fly Fishing", "Casting"],
-    };
+  setup() {
+    const navBarItems = ref([
+      "Spinning",
+      "Bait Fishing",
+      "Fly Fishing",
+      "Casting",
+    ]);
+    return { navBarItems };
   },
 };
 </script>

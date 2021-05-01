@@ -26,15 +26,63 @@
   </div>
 </template>
 <script>
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
-  data() {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const showUserPanel = ref(false);
+    const userIsAdmin = computed(() => {
+      return store.getters["UserAuth/getAdminState"];
+    });
+    function hideUserPanel() {
+      showUserPanel.value = false;
+    }
+    function handleUserButton() {
+      /* if (token) {
+      showUserPanel.value = !showUserPanel.value;
+      } else {
+        router.push({ path: "/User/login" });
+      } */
+    }
+    function logout() {
+      store.dispatch("UserAuth/logout");
+      hideUserPanel();
+      router.push("/");
+    }
+    function redirectToUserCart() {
+      hideUserPanel();
+      router.push({ name: "user-cart" });
+    }
+    function redirectToUserOrder() {
+      hideUserPanel();
+      router.push({ name: "user-orders", query: { page: 1 } });
+    }
+    function redirectToAdminPanel() {
+      hideUserPanel();
+      router.push({ name: "admin-cms" });
+    }
+    return {
+      showUserPanel,
+      userIsAdmin,
+      hideUserPanel,
+      handleUserButton,
+      logout,
+      redirectToUserCart,
+      redirectToUserOrder,
+      redirectToAdminPanel,
+    };
+  },
+  /*  data() {
     return {
       showUserPanel: false,
     };
   },
   computed: {
     userIsAdmin() {
-      console.log(this.$store.getters["UserAuth/getAdminState"]);
+     
       return this.$store.getters["UserAuth/getAdminState"];
     },
   },
@@ -67,7 +115,7 @@ export default {
       this.hideUserPanel();
       this.$router.push({ name: "admin-cms" });
     },
-  },
+  }, */
 };
 </script>
 <style lang="scss">

@@ -27,56 +27,59 @@
 </template>
 <script>
 import DropDown from "../../common/dropDown.vue";
-
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
   components: {
     DropDown,
   },
-
-  data() {
-    return {
-      searBarInputValue: "",
-      selectedCategory: null,
-    };
-  },
-  computed: {
-    placeholder() {
-      if (this.selectedCategory) {
-        return `Search in ${this.selectedCategory}`;
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const searBarInputValue = ref("");
+    const selectedCategory = ref(null);
+    const placeholder = computed(() => {
+      if (selectedCategory.value) {
+        return `Search in ${selectedCategory.value}`;
       } else {
         return "Search products";
       }
-    },
-  },
-  methods: {
-    addCategoryToSearchQuery(e) {
+    });
+    function addCategoryToSearchQuery(e) {
       if (e === "Any") {
-        this.selectedCategory = null;
+        selectedCategory.value = null;
         return;
       }
-      this.selectedCategory = e;
-    },
-    async submitSearchBarForm() {
-      if (this.searBarInputValue.length === 0) {
+      selectedCategory.value = e;
+    }
+    function submitSearchBarForm() {
+      if (searBarInputValue.value.length === 0) {
         return;
       }
-      let query = this.searBarInputValue;
+      let query = searBarInputValue;
 
-      if (this.selectedCategory !== null) {
-        query = query + ` ${this.selectedCategory}`;
+      if (selectedCategory.value !== null) {
+        query = query + ` ${selectedCategory.value}`;
       }
 
       const payload = {
         query,
       };
-      this.$store.dispatch("UserSearch/handleSearchRequest", payload);
+      store.dispatch("UserSearch/handleSearchRequest", payload);
 
-      this.$router.push({
+      router.push({
         name: "search-for-product",
         params: { searchQuery: query },
         query: { page: 1 },
       });
-    },
+    }
+    return {
+      searBarInputValue,
+      placeholder,
+      addCategoryToSearchQuery,
+      submitSearchBarForm,
+    };
   },
 };
 </script>
