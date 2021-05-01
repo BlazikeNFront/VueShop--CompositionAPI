@@ -24,6 +24,9 @@
   </div>
 </template>
 <script>
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 export default {
   props: {
     product: {
@@ -31,21 +34,20 @@ export default {
       type: Object,
     },
   },
-  data() {
-    return {
-      shortDesc: this.cutDesc,
-    };
-  },
-  computed: {
-    cutDesc() {
-      return this.product.description.split("").splice(0, 100).join("") + "...";
-    },
-  },
-  methods: {
-    checkDetails() {
-      this.$store.dispatch("UserSearch/setProductDetails", this.product._id);
-      this.$router.push(`/productDetails/${this.product._id}`);
-    },
+  setup(props) {
+    const router = useRouter();
+    const store = useStore();
+
+    const shortDesc = computed(() => {
+      return (
+        props.product.description.split("").splice(0, 100).join("") + "..."
+      );
+    });
+    function checkDetails() {
+      store.dispatch("UserSearch/setProductDetails", props.product._id);
+      router.push(`/productDetails/${props.product._id}`);
+    }
+    return { shortDesc, checkDetails };
   },
 };
 </script>

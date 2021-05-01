@@ -92,12 +92,69 @@
   </div>
 </template>
 <script>
+import { ref } from "vue";
+import { useStore } from "vuex";
 export default {
   props: ["order", "changeOrderStatus"],
 
   emits: ["orderStatusChanged", "closeModal"],
+  setup(props, context) {
+    const store = useStore();
+    const orderDetailsStatus = ref(null);
+    const orderDetailsModal = ref(false);
+    const orderDeatilsModalMsg = ref(null);
+    const loader = ref(false);
+    const userOrderClick = ref(false);
 
-  data() {
+    function setUserOrderClick() {
+      userOrderClick.value = true;
+    }
+    function closeModal() {
+      store.dispatch("Admin/closeShowOrderDetails");
+    }
+    async function handleChangeOrderStatus(orderId) {
+      try {
+        loader.value = true;
+        const payload = {
+          orderId,
+          orderStatus: orderDetailsStatus.value,
+        };
+        const response = await fetch(
+          `http://localhost:3000/admin/changeOrderStatus`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: this.getToken.token,
+              "Content-Type": "application/json",
+            },
+            body: await JSON.stringify(payload),
+          }
+        );
+        if (response.status !== 200) {
+          throw new Error("Server did not accepted change of order");
+        } else {
+          loader.value = false;
+          context.emit("orderStatusChanged");
+        }
+      } catch (err) {
+        console.log(err);
+        loader.value = false;
+        store.dispatch("ErrorHandler/showError", err.message);
+      }
+    }
+    return {
+      orderDetailsStatus,
+      closeModal,
+      orderDetailsModal,
+      handleChangeOrderStatus,
+      orderDeatilsModalMsg,
+      loader,
+      userOrderClick,
+      setUserOrderClick,
+    };
+  },
+};
+/*  data() {
     return {
       orderDetailsStatus: null,
       orderDetailsModal: false,
@@ -144,8 +201,7 @@ export default {
         this.$store.dispatch("ErrorHandler/showError", err.message);
       }
     },
-  },
-};
+  }, */
 </script>
 <style lang='scss'>
 .orderDetailsView {

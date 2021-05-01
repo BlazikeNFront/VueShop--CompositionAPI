@@ -74,62 +74,67 @@
 </template>
 <script>
 import InputNumber from "../../common/InputNumber.vue";
-
+import { computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
   components: {
     InputNumber,
   },
-
-  computed: {
-    showUserCart() {
-      return this.$store.getters["Cart/getShowCart"];
-    },
-    userCart() {
-      return this.$store.getters["Cart/getCart"];
-    },
-
-    totalQuantityOfUserProducts() {
-      return this.userCart.reduce((qtn, elem) => (qtn += elem.quantity), 0);
-    },
-    totalCartPrice() {
-      return this.userCart.reduce(
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const showUserCart = computed(() => {
+      return store.getters["Cart/getShowCart"];
+    });
+    const userCart = computed(() => {
+      return store.getters["Cart/getCart"];
+    });
+    const totalQuantityOfUserProducts = computed(() => {
+      return userCart.value.reduce((qtn, elem) => (qtn += elem.quantity), 0);
+    });
+    const totalCartPrice = computed(() => {
+      return userCart.value.reduce(
         (price, elem) => (price += elem.price * elem.quantity),
         0
       );
-    },
-  },
-  watch: {
-    getCart(newVal) {
-      this.userCart = newVal;
-    },
-  },
-  methods: {
-    showUserCartAction() {
-      this.$store.dispatch("Cart/toggleCart");
-    },
-    handleOrderRequest() {
-      if (!this.token) {
-        this.$router.push({ path: "/User/login" });
+    });
+    function showUserCartAction() {
+      store.dispatch("Cart/toggleCart");
+    }
+    function handleOrderRequest() {
+      /*  if (token) {
+        router.push({ path: "/User/login" });
         return;
-      }
-      this.$router.push("/userOrder");
-    },
-    userCartPageLink() {
-      this.showUserCartAction();
-      this.$router.push({
+      } */
+      router.push("/userOrder");
+    }
+    function userCartPageLink() {
+      showUserCartAction();
+      router.push({
         name: "user-cart",
       });
-    },
-    changeProductQuantityInCart(number, prodId) {
+    }
+    function changeProductQuantityInCart(number, prodId) {
       const payload = {
         newQuantity: number,
         prodId,
       };
-      this.$store.dispatch("Cart/updateProductQuantityInCart", payload);
-    },
-    deleteProductFromCart(prodId) {
-      this.$store.dispatch("Cart/deleteItemFromCart", prodId);
-    },
+      store.dispatch("Cart/updateProductQuantityInCart", payload);
+    }
+    function deleteProductFromCart(prodId) {
+      store.dispatch("Cart/deleteItemFromCart", prodId);
+    }
+    return {
+      showUserCart,
+      totalQuantityOfUserProducts,
+      totalCartPrice,
+      showUserCartAction,
+      handleOrderRequest,
+      userCartPageLink,
+      changeProductQuantityInCart,
+      deleteProductFromCart,
+    };
   },
 };
 </script>

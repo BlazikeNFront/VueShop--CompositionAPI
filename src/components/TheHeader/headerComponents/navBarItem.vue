@@ -19,25 +19,23 @@
   </li>
 </template>
 <script>
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
   props: ["title"],
-
-  data() {
-    return {
-      listElements: ["Rods", "Reels", "Lines", "Other"],
-    };
-  },
-  computed: {
-    isShortTitle() {
-      if (this.title.length < 9) {
+  setup(props) {
+    const router = useRouter();
+    const store = useStore();
+    const listElement = ref(["Rods", "Reels", "Lines", "Other"]);
+    const isShortTitle = computed(() => {
+      if (props.title.length < 9) {
         return true;
       } else {
         return false;
       }
-    },
-  },
-  methods: {
-    searchAction(title, element) {
+    });
+    function searchAction(title, element) {
       const category = title.split(" ")[0];
 
       let query;
@@ -52,13 +50,14 @@ export default {
         page: 1,
       };
 
-      this.$store.dispatch("UserSearch/handleSearchRequest", payload);
-      this.$router.push({
+      store.dispatch("UserSearch/handleSearchRequest", payload);
+      router.push({
         name: "search-for-product",
         params: { searchQuery: payload.query },
         query: { page: 1 },
       });
-    },
+    }
+    return { listElement, isShortTitle, searchAction };
   },
 };
 </script>

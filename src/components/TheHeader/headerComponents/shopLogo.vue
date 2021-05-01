@@ -13,11 +13,14 @@
   </div>
 </template>
 <script>
+import { useRouter } from "vue-router";
 export default {
-  methods: {
-    redirectToMainPage() {
-      this.$router.push("/");
-    },
+  setup() {
+    const router = useRouter();
+    function redirectToMainPage() {
+      router.push("/");
+    }
+    return { redirectToMainPage };
   },
 };
 </script>
