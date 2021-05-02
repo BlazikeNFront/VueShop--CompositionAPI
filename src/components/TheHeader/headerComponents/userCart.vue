@@ -27,7 +27,7 @@
           @click="showUserCartAction"
         ></font-awesome-icon>
       </h4>
-      <p class="cartContainer__noProdInfo" v-if="this.userCart.length === 0">
+      <p class="cartContainer__noProdInfo" v-if="userCart.length === 0">
         There is no product in your card
       </p>
       <div v-else class="cartContainer__cartList">
@@ -68,7 +68,7 @@
           </button>
         </div>
       </div>
-      <a @click.prevent="this.userCartPageLink">VIEW CART</a>
+      <a @click.prevent="userCartPageLink">VIEW CART</a>
     </section>
   </transition>
 </template>
@@ -126,6 +126,7 @@ export default {
       store.dispatch("Cart/deleteItemFromCart", prodId);
     }
     return {
+      userCart,
       showUserCart,
       totalQuantityOfUserProducts,
       totalCartPrice,

@@ -85,32 +85,25 @@
 </template>
 <script>
 import AddAddressForm from "./addAdressForm.vue";
-
+import { ref, reactive, computed } from "vue";
+import { useStore } from "vuex";
 export default {
   components: {
     AddAddressForm,
   },
-
-  data() {
-    return {
-      showAddressForm: false,
-
-      orderResult: {
-        visible: false,
-        result: null,
-        message: "Shop couldnt accept order, try again later",
-        productsUnavaliable: null,
-      },
-    };
-  },
-  computed: {
-    lastUsedAddress() {
-      return this.$store.getters["UserAuth/getLastUsedAddress"];
-    },
-  },
-
-  methods: {
-    async handleOrderRequest() {
+  setup() {
+    const store = useStore();
+    const showAddressForm = ref(false);
+    const orderResult = reactive({
+      visible: false,
+      result: null,
+      message: "Shop couldnt accept order, try again later",
+      productsUnavaliable: null,
+    });
+    const lastUsedAddress = computed(() => {
+      return store.getters["UserAuth/getLastUsedAddress"];
+    });
+    async function handleOrderRequest() {
       try {
         this.orderResult.visible = true;
         this.orderResult.loader = true;
@@ -147,14 +140,21 @@ export default {
         this.orderResult.loader = false;
         console.log(err);
       }
-    },
-    confirmAction() {
+    }
+    function confirmAction() {
       if (this.orderResult.result === true) {
         this.$router.push({ name: "user-orders" });
       } else {
         this.orderResult.visible = false;
       }
-    },
+    }
+    return {
+      showAddressForm,
+      orderResult,
+      lastUsedAddress,
+      handleOrderRequest,
+      confirmAction,
+    };
   },
 };
 </script>

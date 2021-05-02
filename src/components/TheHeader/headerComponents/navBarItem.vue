@@ -2,16 +2,16 @@
   <li
     class="mainNavList__item"
     :class="{ letterSpacing: isShortTitle }"
-    @click="searchAction(this.title)"
+    @click="searchAction(title)"
   >
     {{ this.title }}
     <ul class="mainNavList__subList">
       <li>{{ this.title }}</li>
       <!-- i want to same color gradient continues in sublist item, so to achive that  sublist works like popUp replaceing original nav -->
       <li
-        v-for="element in this.listElements"
+        v-for="element in listElements"
         :key="element"
-        @click.stop="searchAction(this.title, element)"
+        @click.stop="searchAction(title, element)"
       >
         {{ element }}
       </li>
@@ -27,7 +27,7 @@ export default {
   setup(props) {
     const router = useRouter();
     const store = useStore();
-    const listElement = ref(["Rods", "Reels", "Lines", "Other"]);
+    const listElements = ref(["Rods", "Reels", "Lines", "Other"]);
     const isShortTitle = computed(() => {
       if (props.title.length < 9) {
         return true;
@@ -57,7 +57,7 @@ export default {
         query: { page: 1 },
       });
     }
-    return { listElement, isShortTitle, searchAction };
+    return { listElements, isShortTitle, searchAction };
   },
 };
 </script>

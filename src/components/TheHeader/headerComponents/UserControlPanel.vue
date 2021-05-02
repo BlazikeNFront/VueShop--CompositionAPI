@@ -1,24 +1,19 @@
 <template>
   <div class="userControlPanel">
-    <button
-      @click="this.handleUserButton"
-      class="userControlPanel__showPanelButton"
-    >
+    <button @click="handleUserButton" class="userControlPanel__showPanelButton">
       <font-awesome-icon
         :class="{ loggedUserIcon: token }"
         :icon="['fa', 'user']"
       ></font-awesome-icon>
     </button>
 
-    <back-drop v-if="this.showUserPanel" @click="hideUserPanel"></back-drop>
+    <back-drop v-if="showUserPanel" @click="hideUserPanel"></back-drop>
     <transition name="user-panel">
-      <div class="userControlPanel__panelContainer" v-if="this.showUserPanel">
+      <div class="userControlPanel__panelContainer" v-if="showUserPanel">
         <div class="userControlPanel__panel">
-          <a @click.prevent="this.redirectToUserCart">Check current cart</a>
-          <a @click.prevent="this.redirectToUserOrder">Check orders</a>
-          <a v-if="this.userIsAdmin" @click.prevent="this.redirectToAdminPanel"
-            >ADMIN</a
-          >
+          <a @click.prevent="redirectToUserCart">Check current cart</a>
+          <a @click.prevent="redirectToUserOrder">Check orders</a>
+          <a v-if="userIsAdmin" @click.prevent="redirectToAdminPanel">ADMIN</a>
           <button @click="logout">Logout</button>
         </div>
       </div>
@@ -41,6 +36,7 @@ export default {
       showUserPanel.value = false;
     }
     function handleUserButton() {
+      router.push({ path: "/User/login" });
       /* if (token) {
       showUserPanel.value = !showUserPanel.value;
       } else {
