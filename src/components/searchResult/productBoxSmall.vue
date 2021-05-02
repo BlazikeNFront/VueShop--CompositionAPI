@@ -9,10 +9,10 @@
       />
     </div>
     <div class="productBoxSmall__textContent">
-      <h4 class="productBoxSmall__productTitle">{{ this.product.name }}</h4>
+      <h4 class="productBoxSmall__productTitle">{{ product.name }}</h4>
       <div class="testProduct">
-        <p class="productBoxSmall__productPrice">{{ this.product.price }} $</p>
-        <p class="productBoxSmall__productDesc">{{ cutDesc }}</p>
+        <p class="productBoxSmall__productPrice">{{ product.price }} $</p>
+        <p class="productBoxSmall__productDesc">{{ shortDesc }}</p>
       </div>
     </div>
     <button class="productBoxSmall__button" @click="checkDetails">

@@ -77,41 +77,43 @@
   </div>
 </template>
 <script>
+import { ref, reactive } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
   emits: ["changeView"],
-  data() {
-    return {
-      email: null,
-      userPassword: null,
-      confirmPassword: null,
-      formErrors: {
-        passwordErrorMsg: null,
-        userNameErrorMsg: null,
-      },
-      loader: false,
-      dialogModal: {
-        type: null,
-        msg: null,
-      },
-    };
-  },
-  methods: {
-    clearErrors() {
-      this.formErrors.passwordErrorMsg = null;
-      this.formErrors.userNameErrorMsg = null;
-    },
-    closeForm() {
-      this.$router.push("/");
-    },
-    async handleSignUp() {
-      if (this.checkForm() === false) {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const email = ref("");
+    const userPassword = ref("");
+    const confirmPassword = ref("");
+    const formErrors = reactive({
+      passwordErrorMsg: null,
+      userNameErrorMsg: null,
+    });
+    const loader = ref(false);
+    const dialogModal = reactive({
+      type: null,
+      msg: null,
+    });
+
+    function clearErrors() {
+      formErrors.passwordErrorMsg = null;
+      formErrors.userNameErrorMsg = null;
+    }
+    function closeForm() {
+      router.push("/");
+    }
+    async function handleSignUp() {
+      if (checkForm() === false) {
         return;
       }
       try {
-        this.loader = true;
+        loader.value = true;
         const userData = {
-          email: this.email,
-          password: this.userPassword,
+          email: email,
+          password: userPassword,
         };
 
         const data = await fetch("http://localhost:3000/SignUp", {
@@ -122,52 +124,64 @@ export default {
         const dataJSON = await data.json();
 
         if (data.status !== 200) {
-          this.dialogModal.type = "error";
-          this.dialogModal.msg = dataJSON.message;
-          this.loader = false;
+          dialogModal.type = "error";
+          dialogModal.msg = dataJSON.message;
+          loader.value = false;
           return;
         }
-        this.dialogModal.type = "confirmation";
-        this.dialogModal.msg = dataJSON.message;
-        this.loader = false;
+        dialogModal.type = "confirmation";
+        dialogModal.msg = dataJSON.message;
+        loader.value = false;
       } catch (err) {
-        this.loader = false;
-        console.log(err.message);
-        this.$store.dispatch("ErrorHandler/showError", err.message);
+        loader.value = false;
+
+        store.dispatch("ErrorHandler/showError", err.message);
       }
-    },
-    checkForm() {
+    }
+
+    function checkForm() {
       const regexForEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
       const regexForPassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //Requirements -minimum eight characters, at least one letter and one number
 
-      if (regexForEmail.test(this.email) === false) {
-        this.formErrors.userNameErrorMsg = "Invalid email";
+      if (regexForEmail.test(email) === false) {
+        formErrors.userNameErrorMsg = "Invalid email";
 
         return false;
       }
 
-      if (regexForPassword.test(this.userPassword) === false) {
-        this.formErrors.passwordErrorMsg =
+      if (regexForPassword.test(userPassword) === false) {
+        formErrors.passwordErrorMsg =
           "Password should be minimum eight characters,contain one letter and one number";
 
         return false;
       }
-      if (this.userPassword !== this.confirmPassword) {
-        this.formErrors.passwordErrorMsg = "Passwords do not match :(";
+      if (userPassword.value !== confirmPassword.value) {
+        formErrors.passwordErrorMsg = "Passwords do not match :(";
 
         return false;
       }
-      this.formErrors.userNameErrorMsg = null;
-      this.formErrors.passwordErrorMsg = null;
-    },
-    closeErrorModal() {
-      if (this.dialogModal.type === "confirmation") {
-        this.$router.push("/");
+      formErrors.userNameErrorMsg = null;
+      formErrors.passwordErrorMsg = null;
+    }
+    function closeErrorModal() {
+      if (dialogModal.type === "confirmation") {
+        router.push("/");
       }
-      this.dialogModal.type = null;
-      this.dialogModal.msg = null;
-    },
+      dialogModal.type = null;
+      dialogModal.msg = null;
+    }
+
+    return {
+      email,
+      userPassword,
+      formErrors,
+      loader,
+      closeForm,
+      clearErrors,
+      handleSignUp,
+      closeErrorModal,
+    };
   },
 };
 </script>

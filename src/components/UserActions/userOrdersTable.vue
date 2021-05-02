@@ -1,6 +1,6 @@
 <template>
-  <div class="orders__container" @scroll="this.setUserOrderTableScroll">
-    <div class="userCart__arrowForMobile" v-if="!this.userOrderTableScroll">
+  <div class="orders__container" @scroll="setUserOrderTableScroll">
+    <div class="userCart__arrowForMobile" v-if="!userOrderTableScroll">
       <font-awesome-icon :icon="['fa', 'arrow-right']"></font-awesome-icon>
     </div>
     <ul class="orders__ordersList">
@@ -11,7 +11,7 @@
         <h4>Status</h4>
       </li>
 
-      <li class="order__li" v-for="order in this.userOrders" :key="order._id">
+      <li class="order__li" v-for="order in userOrders" :key="order._id">
         <div class="userOrder__productInfomartionBox">
           <p class="userOrder__productInformation">
             {{ order._id }}
@@ -47,6 +47,7 @@
 </template>
 <script>
 import OrderDetails from "./orderDetails.vue";
+import { ref, computed } from "vue";
 export default {
   components: {
     OrderDetails,
@@ -60,41 +61,35 @@ export default {
       type: Boolean,
     },
   },
-  data() {
-    return {
-      selectedOrder: null,
-      showOrderDetails: false,
-      userOrderTableScroll: false,
-    };
-  },
-  computed: {
-    allowOrderStatusChange() {
+  setup() {
+    const selectedOrder = ref(null);
+    const showOrderDetails = ref(false);
+    const userOrderTableScroll = ref(false);
+    const allowOrderStatusChange = computed(() => {
       if (this.admin === true) {
         return true;
       } else {
         return false;
       }
-    },
-  },
-  methods: {
-    setUserOrderTableScroll() {
-      this.userOrderTableScroll = true;
-    },
-    toggleOrderDetails(order) {
-      this.selectedOrder = order;
-      this.showOrderDetails = true;
-    },
-    closeModal() {
-      this.showOrderDetails = false;
-    },
-    calculateOrderValue(order) {
+    });
+    function setUserOrderTableScroll() {
+      userOrderTableScroll.value = true;
+    }
+    function toggleOrderDetails(order) {
+      selectedOrder.value = order;
+      showOrderDetails.value = true;
+    }
+    function closeModal() {
+      showOrderDetails.value = false;
+    }
+    function calculateOrderValue(order) {
       const sum = order.cart.reduce((acc, item) => {
         return acc + item.price * item.quantity;
       }, 0);
 
       return Number(sum).toFixed(2);
-    },
-    getOrderStatus(status) {
+    }
+    function getOrderStatus(status) {
       if (status === 0) {
         return "Waiting for acceptance";
       } else if (status === 1) {
@@ -102,7 +97,18 @@ export default {
       } else {
         return "Realized";
       }
-    },
+    }
+    return {
+      selectedOrder,
+      showOrderDetails,
+      userOrderTableScroll,
+      allowOrderStatusChange,
+      setUserOrderTableScroll,
+      toggleOrderDetails,
+      closeModal,
+      calculateOrderValue,
+      getOrderStatus,
+    };
   },
 };
 </script>

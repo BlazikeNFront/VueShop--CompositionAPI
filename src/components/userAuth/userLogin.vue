@@ -51,9 +51,58 @@
   </div>
 </template>
 <script>
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
   emits: ["changeView"],
-  data() {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    const loginPage = ref(true);
+    const userName = ref(null);
+    const userPassword = ref(null);
+    const passwordError = ref(null);
+    const userNameError = ref(null);
+    const serverErrorMsg = ref(null);
+    async function handleLogin() {
+      if (userPassword.value === null || "") {
+        passwordError.value = "Please insert password";
+        return;
+      }
+      if (userName.value === null || userName.value.split("").length < 5) {
+        userNameError.value = "Please insert correct email";
+        return;
+      }
+      try {
+        const payload = {
+          userName: userName,
+          password: userPassword,
+        };
+        await store.dispatch("UserAuth/handleLogin", payload);
+        router.push("/");
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    function changeRoute() {
+      router.push({ name: "user-signUp" });
+    }
+    function closeErrorModal() {
+      serverErrorMsg.value = null;
+    }
+    return {
+      loginPage,
+      passwordError,
+      handleLogin,
+      userNameError,
+      serverErrorMsg,
+      changeRoute,
+      closeErrorModal,
+    };
+  },
+  /* data() {
     return {
       loginPage: true, //true === userLogin page, false=== signUp page
       userName: null,
@@ -90,7 +139,7 @@ export default {
     closeErrorModal() {
       this.serverErrorMsg = null;
     },
-  },
+  }, */
 };
 </script>
 <style lang='scss'>
