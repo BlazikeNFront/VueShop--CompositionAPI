@@ -69,51 +69,60 @@
 </template>
 <script>
 import UserConfirmation from "../../components/UserActions/userOrderConfirmation.vue";
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
 export default {
   components: { UserConfirmation },
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const userConfirmationDialog = ref(false);
+    const userCartClick = ref(false);
 
-  data() {
-    return {
-      userConfirmationDialog: false,
-      userCartClick: false,
-    };
-  },
-  computed: {
-    token() {
-      return this.$store.getters["UserAuth/getToken"] || false;
-    },
-
-    userCart() {
-      return this.$store.getters["Cart/getCart"];
-    },
-    summaryCost() {
+    const token = computed(() => {
+      return store.getters["UserAuth/getToken"];
+    });
+    const userCart = computed(() => {
+      return store.getters["Cart/getCart"];
+    });
+    const summaryCost = computed(() => {
       const summaryCost = this.userCart.reduce((acc, element) => {
         const sum = Number(element.price) * Number(element.quantity);
         return acc + sum;
       }, 0);
-
       return summaryCost.toFixed(2);
-    },
-  },
-  methods: {
-    showUserConfimationDialog() {
-      if (!this.token) {
-        this.$router.push({ name: "user-login", params: { view: "login" } });
+    });
+    function showUserConfimationDialog() {
+      if (token.value) {
+        router.push({ name: "user-login", params: { view: "login" } });
         return;
       }
-      this.userConfirmationDialog = true;
+      userConfirmationDialog.value = true;
 
-      this.fetchUserAddress();
-    },
-    hideUserConfirmationDialog() {
-      this.userConfirmationDialog = false;
-    },
-    fetchUserAddress() {
-      this.$store.dispatch("UserAuth/fetchUserAddress");
-    },
-    setUserClick() {
-      this.userCartClick = true;
-    },
+      fetchUserAddress();
+    }
+    function hideUserConfirmationDialog() {
+      userConfirmationDialog.value = false;
+    }
+    function fetchUserAddress() {
+      store.dispatch("UserAuth/fetchUserAddress");
+    }
+    function setUserClick() {
+      userCartClick.value = true;
+    }
+
+    return {
+      userConfirmationDialog,
+      userCartClick,
+      token,
+      userCart,
+      summaryCost,
+      showUserConfimationDialog,
+      hideUserConfirmationDialog,
+      setUserClick,
+    };
   },
 };
 </script>

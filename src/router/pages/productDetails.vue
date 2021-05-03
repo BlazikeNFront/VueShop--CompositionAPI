@@ -39,45 +39,45 @@
 </template>
 <script>
 import InputRange from "../../components/common/InputNumber.vue";
-
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 export default {
   components: {
     InputRange,
   },
+  setup() {
+    const store = useStore();
+    const route = useRoute();
+    const quantity = ref(1);
+    const showNotifaction = ref(false);
+    const product = computed(() => {
+      return store.getters["UserSearch/getProductDetails"];
+    });
 
-  data() {
-    return {
-      quantity: 1,
-      showNotifaction: false,
-    };
-  },
-  mounted() {
-    const routerProductId = this.$route.params.productId;
-    if (this.product === null || this.product._id !== routerProductId) {
-      this.$store.dispatch("UserSearch/setProductDetails", routerProductId);
+    function changeQuantity(number) {
+      console.log(quantity.value);
+      quantity.value = number;
     }
-  },
-  methods: {
-    changeQuantity(number) {
-      this.quantity = number;
-    },
-    addToCart() {
+    function addToCart() {
       const payload = {};
       payload._id = this.product._id;
       payload.name = this.product.name;
       payload.imagePath = this.product.imagePath.small;
       payload.price = this.product.price;
       payload.quantity = this.quantity;
-      this.$store.dispatch("Cart/addItemtoCart", payload);
-      this.$store.dispatch("Cart/toggleCart");
-      this.showNotifaction = true;
-      this.$store.dispatch("Cart/setCartInLocalStorage");
-    },
-  },
-  computed: {
-    product() {
-      return this.$store.getters["UserSearch/getProductDetails"];
-    },
+      store.dispatch("Cart/addItemtoCart", payload);
+      store.dispatch("Cart/toggleCart");
+      showNotifaction.value = true;
+      store.dispatch("Cart/setCartInLocalStorage");
+    }
+    onMounted(() => {
+      const routerProductId = route.params.productId;
+      if (product.value === null || product.value._id !== routerProductId) {
+        store.dispatch("UserSearch/setProductDetails", routerProductId);
+      }
+    });
+    return { quantity, showNotifaction, product, changeQuantity, addToCart };
   },
 };
 </script>

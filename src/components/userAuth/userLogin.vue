@@ -1,6 +1,10 @@
 <template>
   <div class="userAuth__userLogin">
-    <form class="loginForm__form" @submit.prevent="handleLogin" v-if="!token">
+    <form
+      class="loginForm__form"
+      @submit.prevent="handleLogin"
+      v-if="!token.value"
+    >
       <div class="loginForm__inputs">
         <div class="loginFormControl">
           <label for="userName" class="loginFormControll__label">Email:</label>
@@ -13,7 +17,7 @@
             placeholder="Email"
           />
 
-          <p v-if="userNameError">{{ this.userNameError }}</p>
+          <p v-if="userNameError">{{ userNameError }}</p>
         </div>
         <div class="loginFormControl">
           <label for="password" class="loginFormControll__label"
@@ -41,11 +45,7 @@
       </p>
     </form>
 
-    <modal-dialog
-      v-if="serverErrorMsg"
-      @closeDialog="closeErrorModal"
-      @confirmError="closeErrorModal"
-    >
+    <modal-dialog v-if="serverErrorMsg" @closeDialog="closeErrorModal">
       <p class="login__modalErrorMsg">{{}}</p>
     </modal-dialog>
   </div>
@@ -54,12 +54,13 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import useToken from "../hooks/logger.js";
 export default {
   emits: ["changeView"],
   setup() {
     const store = useStore();
     const router = useRouter();
-
+    const token = useToken();
     const loginPage = ref(true);
     const userName = ref(null);
     const userPassword = ref(null);
@@ -77,8 +78,8 @@ export default {
       }
       try {
         const payload = {
-          userName: userName,
-          password: userPassword,
+          userName: userName.value,
+          password: userPassword.value,
         };
         await store.dispatch("UserAuth/handleLogin", payload);
         router.push("/");
@@ -93,53 +94,18 @@ export default {
       serverErrorMsg.value = null;
     }
     return {
+      token,
       loginPage,
       passwordError,
       handleLogin,
+      userName,
+      userPassword,
       userNameError,
       serverErrorMsg,
       changeRoute,
       closeErrorModal,
     };
   },
-  /* data() {
-    return {
-      loginPage: true, //true === userLogin page, false=== signUp page
-      userName: null,
-      userPassword: null,
-      passwordError: null,
-      userNameError: null,
-      serverErrorMsg: null,
-    };
-  },
-  methods: {
-    async handleLogin() {
-      if (this.userPassword === null || "") {
-        this.passwordError = "Please insert password";
-        return;
-      }
-      if (this.userName === null || this.userName.split("").length < 5) {
-        this.userNameError = "Please insert correct email";
-        return;
-      }
-      try {
-        const payload = {
-          userName: this.userName,
-          password: this.userPassword,
-        };
-        await this.$store.dispatch("UserAuth/handleLogin", payload);
-        this.$router.push("/");
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    changeRoute() {
-      this.$router.push({ name: "user-signUp" });
-    },
-    closeErrorModal() {
-      this.serverErrorMsg = null;
-    },
-  }, */
 };
 </script>
 <style lang='scss'>

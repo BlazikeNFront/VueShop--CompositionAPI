@@ -14,13 +14,14 @@
 </template>
 <script>
 import Slider from "../../components/common/Slider.vue";
-
+import { computed } from "vue";
 export default {
   components: { Slider },
-  computed: {
-    ordersLink() {
+  setup() {
+    const ordersLink = computed(() => {
       return { name: "admin-orders", query: { page: 1 } };
-    },
+    });
+    return { ordersLink };
   },
 };
 </script>

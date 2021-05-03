@@ -94,12 +94,14 @@
 <script>
 import { ref } from "vue";
 import { useStore } from "vuex";
+import useToken from "../hooks/logger.js";
 export default {
   props: ["order", "changeOrderStatus"],
 
   emits: ["orderStatusChanged", "closeModal"],
   setup(props, context) {
     const store = useStore();
+    const token = useToken();
     const orderDetailsStatus = ref(null);
     const orderDetailsModal = ref(false);
     const orderDeatilsModalMsg = ref(null);
@@ -124,7 +126,7 @@ export default {
           {
             method: "POST",
             headers: {
-              Authorization: this.getToken.token,
+              Authorization: token,
               "Content-Type": "application/json",
             },
             body: await JSON.stringify(payload),
@@ -154,54 +156,6 @@ export default {
     };
   },
 };
-/*  data() {
-    return {
-      orderDetailsStatus: null,
-      orderDetailsModal: false,
-      orderDeatilsModalMsg: null,
-      loader: false,
-      userOrderClick: false,
-    };
-  },
-
-  methods: {
-    setUserOrderClick() {
-      this.userOrderClick = true;
-    },
-    closeModal() {
-      this.$store.dispatch("Admin/closeShowOrderDetails");
-    },
-    async handleChangeOrderStatus(orderId) {
-      try {
-        this.loader = true;
-        const payload = {
-          orderId,
-          orderStatus: this.orderDetailsStatus,
-        };
-        const response = await fetch(
-          `http://localhost:3000/admin/changeOrderStatus`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: this.getToken.token,
-              "Content-Type": "application/json",
-            },
-            body: await JSON.stringify(payload),
-          }
-        );
-        if (response.status !== 200) {
-          throw new Error("Server did not accepted change of order");
-        } else {
-          this.loader = false;
-          this.$emit("orderStatusChanged");
-        }
-      } catch (err) {
-        console.log(err);
-        this.loader = false;
-        this.$store.dispatch("ErrorHandler/showError", err.message);
-      }
-    },
-  }, */
 </script>
 <style lang='scss'>
 .orderDetailsView {

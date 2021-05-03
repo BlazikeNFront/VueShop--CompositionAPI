@@ -19,11 +19,9 @@
         :currentPage="currentPage"
         @pageChange="handleChangePageRequest"
         @previousPageClick="
-          this.handleChangePageRequest(parseInt(this.currentPage) - 1)
+          handleChangePageRequest(parseInt(this.currentPage) - 1)
         "
-        @nextPageClick="
-          this.handleChangePageRequest(parseInt(this.currentPage) + 1)
-        "
+        @nextPageClick="handleChangePageRequest(parseInt(this.currentPage) + 1)"
       ></pagination-buttons>
     </section>
   </div>
@@ -31,52 +29,56 @@
 <script>
 import ProductBoxSmall from "../../components/searchResult/productBoxSmall.vue";
 import PaginationButtons from "../../components/common/PaginationButtons.vue";
-
+import { computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
 export default {
   components: {
     ProductBoxSmall,
     PaginationButtons,
   },
-
-  mounted() {
-    this.handleSearchRequest();
-  },
-  computed: {
-    searchData() {
-      return this.$store.getters["UserSearch/getSearchResultData"];
-    },
-    storeQuery() {
-      return this.$store.getters["UserSearch/getQuery"];
-    },
-    currentPage() {
-      return this.$route.query.page;
-    },
-    numberOfPages() {
-      return this.$store.getters["UserSearch/getNumberOfPages"];
-    },
-  },
-  methods: {
-    handleSearchRequest() {
-      const query = this.$route.params.searchQuery;
-      const page = this.$route.query.page;
-      if (this.storeQuery === query) {
+  setup() {
+    const store = useStore();
+    const route = useRoute();
+    const router = useRouter();
+    const searchData = computed(() => {
+      return store.getters["UserSearch/getSearchResultData"];
+    });
+    const storeQuery = computed(() => {
+      return store.getters["UserSearch/getQuery"];
+    });
+    const currentPage = computed(() => {
+      return route.query.page;
+    });
+    const numberOfPages = computed(() => {
+      return store.getters["UserSearch/getNumberOfPages"];
+    });
+    function handleSearchRequest() {
+      const query = route.params.searchQuery;
+      const page = route.query.page;
+      if (storeQuery.value === query) {
         return;
       }
 
       const payload = { query, page };
-      this.$store.dispatch("UserSearch/handleSearchRequest", payload);
-    },
-    handleChangePageRequest(page) {
-      if (page < 1 || page > this.numberOfPages) {
+      store.dispatch("UserSearch/handleSearchRequest", payload);
+    }
+    function handleChangePageRequest(page) {
+      if (page < 1 || page > numberOfPages.value) {
         return;
       }
-      this.$store.dispatch("UserSearch/handlePageChange", page);
-      this.$router.push({
+      store.dispatch("UserSearch/handlePageChange", page);
+      router.push({
         name: "search-for-product",
-        params: { searchQuery: this.$store.getters["UserSearch/getQuery"] },
+        params: { searchQuery: store.getters["UserSearch/getQuery"] },
         query: { page: page },
       });
-    },
+    }
+    onMounted(() => {
+      handleSearchRequest();
+    });
+
+    return { searchData, numberOfPages, currentPage, handleChangePageRequest };
   },
 };
 </script>

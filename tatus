@@ -1,0 +1,29 @@
+[33mcommit f0efcec3aaa71b96afe60ed6a54bfba2e48bdc6b[m[33m ([m[1;36mHEAD -> [m[1;32mDevelop[m[33m)[m
+Author: unknown <damian9691@wp.pl>
+Date:   Mon May 3 19:06:14 2021 +0200
+
+    Started adding hooks and fixing bugs after composition API rewrite
+
+[33mcommit 92177b29fa960145ced0ff7cf21c56bd6f7d22f5[m
+Author: unknown <damian9691@wp.pl>
+Date:   Sun May 2 21:56:38 2021 +0200
+
+    Rewroted all components
+
+[33mcommit 641b2a141bae277239524a62484e06f1caf80f74[m
+Author: unknown <damian9691@wp.pl>
+Date:   Sat May 1 20:33:34 2021 +0200
+
+    Rewrite continues...
+
+[33mcommit 21c7337e86ab28e7212a9246c6a79b9aa5ac40af[m
+Author: unknown <damian9691@wp.pl>
+Date:   Fri Apr 30 20:36:35 2021 +0200
+
+    Rewrited all common compononets
+
+[33mcommit d028e819afbc6b7a4825cbdbac64b816db7de606[m
+Author: unknown <damian9691@wp.pl>
+Date:   Thu Apr 29 23:13:26 2021 +0200
+
+    Started rewrite

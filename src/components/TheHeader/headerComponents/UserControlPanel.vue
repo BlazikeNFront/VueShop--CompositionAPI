@@ -21,27 +21,30 @@
   </div>
 </template>
 <script>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import useToken from "../../hooks/logger.js";
+
 export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+
+    const { token, userIsAdmin } = useToken();
+
     const showUserPanel = ref(false);
-    const userIsAdmin = computed(() => {
-      return store.getters["UserAuth/getAdminState"];
-    });
+
     function hideUserPanel() {
       showUserPanel.value = false;
     }
     function handleUserButton() {
-      router.push({ path: "/User/login" });
-      /* if (token) {
-      showUserPanel.value = !showUserPanel.value;
+      console.log(userIsAdmin);
+      if (token.value) {
+        showUserPanel.value = !showUserPanel.value;
       } else {
         router.push({ path: "/User/login" });
-      } */
+      }
     }
     function logout() {
       store.dispatch("UserAuth/logout");
@@ -60,9 +63,12 @@ export default {
       hideUserPanel();
       router.push({ name: "admin-cms" });
     }
+
     return {
       showUserPanel,
+      token,
       userIsAdmin,
+
       hideUserPanel,
       handleUserButton,
       logout,
@@ -71,47 +77,6 @@ export default {
       redirectToAdminPanel,
     };
   },
-  /*  data() {
-    return {
-      showUserPanel: false,
-    };
-  },
-  computed: {
-    userIsAdmin() {
-     
-      return this.$store.getters["UserAuth/getAdminState"];
-    },
-  },
-  methods: {
-    hideUserPanel() {
-      this.showUserPanel = false;
-    },
-    handleUserButton() {
-      if (this.token) {
-        this.showUserPanel = !this.showUserPanel;
-      } else {
-        this.$router.push({ path: "/User/login" });
-      }
-    },
-
-    logout() {
-      this.$store.dispatch("UserAuth/logout");
-      this.hideUserPanel();
-      this.$router.push("/");
-    },
-    redirectToUserCart() {
-      this.hideUserPanel();
-      this.$router.push({ name: "user-cart" });
-    },
-    redirectToUserOrder() {
-      this.hideUserPanel();
-      this.$router.push({ name: "user-orders", query: { page: 1 } });
-    },
-    redirectToAdminPanel() {
-      this.hideUserPanel();
-      this.$router.push({ name: "admin-cms" });
-    },
-  }, */
 };
 </script>
 <style lang="scss">

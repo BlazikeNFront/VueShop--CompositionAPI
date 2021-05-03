@@ -87,12 +87,17 @@
 import AddAddressForm from "./addAdressForm.vue";
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import useToken from "../hooks/logger.js";
 export default {
   components: {
     AddAddressForm,
   },
   setup() {
     const store = useStore();
+    const token = useToken();
+    const router = useRouter();
+
     const showAddressForm = ref(false);
     const orderResult = reactive({
       visible: false,
@@ -107,9 +112,9 @@ export default {
       try {
         this.orderResult.visible = true;
         this.orderResult.loader = true;
-        const token = this.$store.getters["UserAuth/getToken"];
+
         const payload = {
-          cart: this.$store.getters["Cart/getCart"],
+          cart: store.getters["Cart/getCart"],
           token,
         };
 
@@ -129,7 +134,7 @@ export default {
         } else if (rawData.status === 200) {
           this.orderResult.result = true;
           this.orderResult.message = "Order accepted";
-          this.$store.dispatch("Cart/resetCart");
+          store.dispatch("Cart/resetCart");
         } else {
           this.orderResult.result = false;
           this.orderResult.message =
@@ -143,7 +148,7 @@ export default {
     }
     function confirmAction() {
       if (this.orderResult.result === true) {
-        this.$router.push({ name: "user-orders" });
+        router.push({ name: "user-orders" });
       } else {
         this.orderResult.visible = false;
       }
