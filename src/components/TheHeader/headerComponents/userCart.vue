@@ -77,13 +77,16 @@ import InputNumber from "../../common/InputNumber.vue";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import useToken from "../../hooks/logger.js";
 export default {
   components: {
     InputNumber,
   },
+
   setup() {
     const store = useStore();
     const router = useRouter();
+    const token = useToken();
     const showUserCart = computed(() => {
       return store.getters["Cart/getShowCart"];
     });
@@ -103,10 +106,10 @@ export default {
       store.dispatch("Cart/toggleCart");
     }
     function handleOrderRequest() {
-      /*  if (token) {
+      if (token) {
         router.push({ path: "/User/login" });
         return;
-      } */
+      }
       router.push("/userOrder");
     }
     function userCartPageLink() {

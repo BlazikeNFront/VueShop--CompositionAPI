@@ -57,15 +57,16 @@ export default {
       if (searBarInputValue.value.length === 0) {
         return;
       }
-      let query = searBarInputValue;
+      let query = searBarInputValue.value;
 
       if (selectedCategory.value !== null) {
         query = query + ` ${selectedCategory.value}`;
       }
-
+      console.log(query);
       const payload = {
         query,
       };
+
       store.dispatch("UserSearch/handleSearchRequest", payload);
 
       router.push({

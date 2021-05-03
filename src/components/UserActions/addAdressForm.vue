@@ -79,6 +79,7 @@
 <script>
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
+import useToken from "../hooks/logger.js";
 import DropDown from "../common/dropDown.vue";
 export default {
   components: {
@@ -87,6 +88,7 @@ export default {
   emits: ["exitButton"],
   setup(props, context) {
     const store = useStore();
+    const token = useToken();
     const newAddressForm = reactive({
       name: { value: "", error: false },
       surname: { value: "", error: false },
@@ -139,7 +141,7 @@ export default {
 
         formLoader.value = true;
         const payload = {
-          token: store.getters["UserAuth/getToken"].token,
+          token,
           name: newAddressForm.name.value,
           surname: newAddressForm.surname.value,
           address: newAddressForm.address.value,
@@ -213,124 +215,6 @@ export default {
       addNewAddress,
     };
   },
-  /* data() {
-    return {
-      newAddressForm: {
-        name: { value: "", error: false },
-        surname: { value: "", error: false },
-        address: { value: "", error: false },
-      },
-
-      formErrorMsg: null,
-      addressUpdateResult: null,
-      formLoader: false,
-    };
-  }, */
-  /* computed: {
-    userAddressList() {
-      return this.$store.getters["UserAuth/getAllUserAddresses"];
-    },
-    createDefaultDropdownValue() {
-      if (this.$store.getters["UserAuth/getLastUsedAddress"]) {
-        const { name, surname, address } = this.$store.getters[
-          "UserAuth/getLastUsedAddress"
-        ];
-        return `${name} ${surname} ${address}`;
-      } else {
-        return this.createDropDownListItems[0];
-      }
-    },
-    createDropDownListItems() {
-      return this.userAddressList.map(
-        (element) => `${element.name} ${element.surname} ${element.address}`
-      );
-    },
-  }, */
-  /* methods: {
-    setUserAddress(category, index) {
-      const addressObject = this.userAddressList[index];
-
-      this.$store.dispatch("UserAuth/setLastUsedUserAddress", addressObject);
-      this.$emit("exitButton");
-    },
-    clearFormError() {
-      this.formErrorMsg = null;
-      for (let key in this.newAddressForm) {
-        this.newAddressForm[key].error = false;
-      }
-    },
-    async addNewAddress() {
-      try {
-        if (this.formValidation() === false) {
-          return;
-        }
-
-        this.formLoader = true;
-        const payload = {
-          token: this.$store.getters["UserAuth/getToken"].token,
-          name: this.newAddressForm.name.value,
-          surname: this.newAddressForm.surname.value,
-          address: this.newAddressForm.address.value,
-        };
-        const postResult = await fetch("http://localhost:3000/addUserAddress", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: await JSON.stringify(payload),
-        });
-        if (postResult.status !== 200) {
-          this.formLoader = false;
-          throw new Error("Server did not accepted address");
-        } else {
-          this.formLoader = false;
-          this.addressUpdateResult = "Address added successfully";
-          this.clearFormError();
-          this.clearUserInputs();
-        }
-      } catch (err) {
-        this.formLoader = false;
-        this.$store.dispatch("ErrorHandler/showError", err.message);
-      }
-    },
-    clearUserInputs() {
-      for (let key in this.newAddressForm) {
-        this.newAddressForm[key].value = "";
-      }
-    },
-    formValidation() {
-      const { name, surname, address } = this.newAddressForm;
-
-      const regexOnlyLetters = /^[A-Za-z'/s]+$/;
-      const regexForAddress = /^[\sA-Za-z0-9-']+$/;
-
-      if (
-        !regexOnlyLetters.test(name.value) ||
-        this.newAddressForm.name.value.length < 2
-      ) {
-        this.newAddressForm.name.error = true;
-        this.formErrorMsg =
-          "Name field should contain at least 2 letters and also not contain special signs like ?,&";
-        return false;
-      }
-      if (
-        !regexOnlyLetters.test(surname.value) ||
-        this.newAddressForm.surname.value.length < 2
-      ) {
-        this.newAddressForm.surname.error = true;
-        this.formErrorMsg =
-          "Surname field should contain at least 2 letters and also not contain special signs like ?,&";
-        return false;
-      }
-      if (
-        !regexForAddress.test(address.value) ||
-        this.newAddressForm.address.value.length < 5
-      ) {
-        this.newAddressForm.address.error = true;
-        this.formErrorMsg =
-          "Surname field should contain at least 5 characters and also not contain special signs like ?,&";
-        return false;
-      }
-    },
-  }, */
 };
 </script>
 <style lang="scss">

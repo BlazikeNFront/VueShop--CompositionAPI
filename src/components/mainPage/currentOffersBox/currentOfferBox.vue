@@ -24,16 +24,6 @@ export default {
     }
     return { showAdd, toggleAddBox };
   },
-  /* data() {
-    return {
-      showAdd: false,
-    };
-  },
-  methods: {
-    toggleAddBox() {
-      this.showAdd = !this.showAdd;
-    },
-  }, */
 };
 </script>
 <style lang='scss'>

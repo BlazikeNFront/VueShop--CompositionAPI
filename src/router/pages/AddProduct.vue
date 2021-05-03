@@ -243,7 +243,7 @@
       <button class="form-addProduct__button">Create product</button>
     </form>
     <confirmation-modal
-      v-if="this.formRequestConfirmation.visible"
+      v-if="formRequestConfirmation.visible"
       @closeDialog="closeModal"
       @confirmError="closeModal"
     >
@@ -254,35 +254,33 @@
   </div>
 </template>
 <script>
+import { ref, reactive } from "vue";
+import { useStore } from "vuex";
 import ConfirmationModal from "../../components/common/ModalDialog.vue";
 export default {
   components: {
     ConfirmationModal,
   },
-  data() {
-    return {
-      formRequestConfirmation: { visible: false, text: null },
-      formInputs: {
-        typeOfProduct: { value: null, error: false, errorMsg: null },
-        categoryOfProduct: { value: null, error: false, errorMsg: null },
-        name: { value: null, error: false, errorMsg: null },
-        descritpion: { value: null, error: false, errorMsg: null },
-        price: { value: null, error: false, errorMsg: null },
-        quantity: { value: null, error: false, errorMsg: null },
-        image: { value: null, error: false, errorMsg: null },
-      },
-    };
-  },
-
-  methods: {
-    closeModal() {
-      this.formRequestConfirmation.visible = false;
-      this.formRequestConfirmation.text = null;
-    },
-    updateImageFile(e) {
-      this.formInputs.image.value = e.target.files[0];
-    },
-    checkForm() {
+  setup() {
+    const store = useStore();
+    const formRequestConfirmation = reactive({ visible: false, text: null });
+    const formInputs = reactive({
+      typeOfProduct: { value: null, error: false, errorMsg: null },
+      categoryOfProduct: { value: null, error: false, errorMsg: null },
+      name: { value: null, error: false, errorMsg: null },
+      descritpion: { value: null, error: false, errorMsg: null },
+      price: { value: null, error: false, errorMsg: null },
+      quantity: { value: null, error: false, errorMsg: null },
+      image: { value: null, error: false, errorMsg: null },
+    });
+    function closeModal() {
+      formRequestConfirmation.visible = false;
+      formRequestConfirmation.text = null;
+    }
+    function updateImageFile(e) {
+      formInputs.image.value = e.target.files[0];
+    }
+    function checkForm() {
       const {
         typeOfProduct,
         categoryOfProduct,
@@ -291,38 +289,36 @@ export default {
         price,
         quantity,
         image,
-      } = this.formInputs;
+      } = formInputs;
 
       if (typeOfProduct.value === null) {
-        this.formInputs.typeOfProduct.error = true;
-        this.formInputs.typeOfProduct.errorMsg =
-          "U need to pick a type of product";
+        formInputs.typeOfProduct.error = true;
+        formInputs.typeOfProduct.errorMsg = "U need to pick a type of product";
         return false;
       }
       if (categoryOfProduct.value === null) {
-        this.formInputs.categoryOfProduct.error = true;
-        this.formInputs.categoryOfProduct.errorMsg =
+        formInputs.categoryOfProduct.error = true;
+        formInputs.categoryOfProduct.errorMsg =
           "U need to pick a category of product";
         return false;
       }
       if (name.value === null || name.value.length < 5) {
-        this.formInputs.name.error = true;
-        this.formInputs.name.errorMsg =
-          "Name should contaitn at least 5 characters";
+        formInputs.name.error = true;
+        formInputs.name.errorMsg = "Name should contaitn at least 5 characters";
         return false;
       }
       if (
         descritpion.value === null ||
         descritpion.value.split(" ").length < 30
       ) {
-        this.formInputs.descritpion.error = true;
-        this.formInputs.descritpion.errorMsg =
+        formInputs.descritpion.error = true;
+        formInputs.descritpion.errorMsg =
           "Descritpion should contain at least 30 words";
         return false;
       }
       if (price.value === null || price.value < 0) {
-        this.formInputs.price.error = true;
-        this.formInputs.price.errorMsg = "Price is not provided";
+        formInputs.price.error = true;
+        formInputs.price.errorMsg = "Price is not provided";
         return false;
       }
 
@@ -331,18 +327,18 @@ export default {
         quantity.value < 0 ||
         !Number.isInteger(Number(quantity.value))
       ) {
-        this.formInputs.quantity.error = true;
-        this.formInputs.quantity.errorMsg = "Quantity number must be integer";
+        formInputs.quantity.error = true;
+        formInputs.quantity.errorMsg = "Quantity number must be integer";
         return false;
       }
       if (image.value === null) {
-        this.formInputs.image.error = true;
-        this.formInputs.image.errorMsg = "Image of product must be provided";
+        formInputs.image.error = true;
+        formInputs.image.errorMsg = "Image of product must be provided";
         return false;
       }
       return true;
-    },
-    async handleFormRequest() {
+    }
+    async function handleFormRequest() {
       const {
         typeOfProduct,
         categoryOfProduct,
@@ -351,9 +347,9 @@ export default {
         price,
         quantity,
         image,
-      } = this.formInputs;
+      } = formInputs;
 
-      const formValidation = this.checkForm();
+      const formValidation = checkForm();
       const product = new FormData();
 
       product.append("type", typeOfProduct.value);
@@ -365,20 +361,20 @@ export default {
       product.append("image", image.value);
 
       if (formValidation === true) {
-        const productId = await this.addProduct(product);
+        const productId = await addProduct(product);
 
         if (!productId) {
-          this.formRequestConfirmation.text =
+          formRequestConfirmation.text =
             "Server couldnt add product :( Try again";
-          this.formRequestConfirmation.visible = true;
+          formRequestConfirmation.visible = true;
           throw new Error("no product iD in VUE PAGE");
         }
-        this.formRequestConfirmation.text = "Added product succesfully";
-        this.formRequestConfirmation.visible = true;
-        this.cleanForm();
+        formRequestConfirmation.text = "Added product succesfully";
+        formRequestConfirmation.visible = true;
+        cleanForm();
       }
-    },
-    async addProduct(product) {
+    }
+    async function addProduct(product) {
       try {
         const response = await fetch("http://localhost:3000/admin/addProduct", {
           method: "POST",
@@ -398,21 +394,32 @@ export default {
         return responseJSON.productId;
       } catch (err) {
         console.log(err);
-        this.$store.dispatch("ErrorHandler/showError", err.message);
+        store.dispatch("ErrorHandler/showError", err.message);
       }
-    },
-    cleanErrors() {
-      for (const input in this.formInputs) {
-        this.formInputs[input]["error"] = false;
-        this.formInputs[input]["errorMsg"] = null;
+    }
+    function cleanErrors() {
+      for (const input in formInputs) {
+        formInputs[input]["error"] = false;
+        formInputs[input]["errorMsg"] = null;
       }
-    },
-    cleanForm() {
-      for (const input in this.formInputs) {
-        this.formInputs[input]["value"] = null;
-        this.$refs["addProductFrom"].reset();
+    }
+    function cleanForm() {
+      for (const input in formInputs) {
+        formInputs[input]["value"] = null;
+        ref["addProductFrom"].reset();
       }
-    },
+    }
+    return {
+      formRequestConfirmation,
+      formInputs,
+      closeModal,
+      updateImageFile,
+      checkForm,
+      handleFormRequest,
+      addProduct,
+      cleanErrors,
+      cleanForm,
+    };
   },
 };
 </script>

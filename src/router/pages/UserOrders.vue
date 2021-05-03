@@ -30,17 +30,37 @@
 <script>
 import UserOrdersTable from "../../components/UserActions/userOrdersTable.vue";
 import PaginationButtons from "../../components/common/PaginationButtons.vue";
-import userOrdersMixin from "../../components/mixins/userOrders.js";
+import { onMounted } from "vue";
+import useUserOrders from "../../components/hooks/userOrders.js";
+import { useRoute } from "vue-router";
 export default {
-  mixins: [userOrdersMixin],
+  setup() {
+    const route = useRoute();
+    const {
+      fetchOrders,
+      numberOfPages,
+      orders,
+      loader,
+      currentPage,
+      handleChangePageRequest,
+      fetchOrdersAsUser,
+    } = useUserOrders();
+    onMounted(() => {
+      const page = route.query.page;
+      fetchOrdersAsUser(page);
+    });
+    return {
+      fetchOrders,
+      numberOfPages,
+      orders,
+      loader,
+      currentPage,
+      handleChangePageRequest,
+    };
+  },
   components: { UserOrdersTable, PaginationButtons },
 
-  mounted() {
-    const page = this.$route.query.page;
-    this.fetchUserOrders(page);
-  },
-
-  methods: {
+  /* methods: {
     async fetchUserOrders(page) {
       try {
         const rawData = await fetch(
@@ -76,7 +96,7 @@ export default {
         query: { page: page },
       });
     },
-  },
+  }, */
 };
 </script>
 <style lang="scss">

@@ -64,10 +64,11 @@ export default {
               root: true,
             });
           }
-          /*  if (dataJSON.admin === true) {
+          console.log(dataJSON);
+          if (dataJSON.userAdmin === true) {
             context.commit("handleAdminLogin", payload);
             return;
-          } */
+          }
           context.commit("handleLogin", payload);
         }
       } catch (err) {

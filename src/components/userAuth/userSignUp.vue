@@ -112,8 +112,8 @@ export default {
       try {
         loader.value = true;
         const userData = {
-          email: email,
-          password: userPassword,
+          email: email.value,
+          password: userPassword.value,
         };
 
         const data = await fetch("http://localhost:3000/SignUp", {
@@ -144,13 +144,13 @@ export default {
 
       const regexForPassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //Requirements -minimum eight characters, at least one letter and one number
 
-      if (regexForEmail.test(email) === false) {
+      if (regexForEmail.test(email.value) === false) {
         formErrors.userNameErrorMsg = "Invalid email";
 
         return false;
       }
 
-      if (regexForPassword.test(userPassword) === false) {
+      if (regexForPassword.test(userPassword.value) === false) {
         formErrors.passwordErrorMsg =
           "Password should be minimum eight characters,contain one letter and one number";
 
@@ -175,7 +175,9 @@ export default {
     return {
       email,
       userPassword,
+      confirmPassword,
       formErrors,
+      dialogModal,
       loader,
       closeForm,
       clearErrors,

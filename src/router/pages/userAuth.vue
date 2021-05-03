@@ -23,27 +23,28 @@
 <script>
 import userLogin from "../../components/userAuth/userLogin.vue";
 import UserSignUp from "../../components/userAuth/userSignUp.vue";
-
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 export default {
   components: { userLogin, UserSignUp },
-
-  methods: {
-    changeView() {
-      if (this.showUserLogin) {
-        this.$router.push("/User/signUp");
-      } else {
-        this.$router.push("/User/login");
-      }
-    },
-  },
-  computed: {
-    showUserLogin() {
-      if (this.$route.params.view === "login") {
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const showUserLogin = computed(() => {
+      if (route.params.view === "login") {
         return true;
       } else {
         return false;
       }
-    },
+    });
+    function changeView() {
+      if (showUserLogin.value) {
+        router.push("/User/signUp");
+      } else {
+        router.push("/User/login");
+      }
+    }
+    return { changeView, showUserLogin };
   },
 };
 </script>
