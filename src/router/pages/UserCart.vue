@@ -72,6 +72,7 @@ import UserConfirmation from "../../components/UserActions/userOrderConfirmation
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import useToken from "../../components/hooks/logger.js";
 
 export default {
   components: { UserConfirmation },
@@ -80,27 +81,24 @@ export default {
     const router = useRouter();
     const userConfirmationDialog = ref(false);
     const userCartClick = ref(false);
+    const { token } = useToken();
 
-    const token = computed(() => {
-      return store.getters["UserAuth/getToken"];
-    });
     const userCart = computed(() => {
       return store.getters["Cart/getCart"];
     });
     const summaryCost = computed(() => {
-      const summaryCost = this.userCart.reduce((acc, element) => {
+      const summaryCost = userCart.value.reduce((acc, element) => {
         const sum = Number(element.price) * Number(element.quantity);
         return acc + sum;
       }, 0);
       return summaryCost.toFixed(2);
     });
     function showUserConfimationDialog() {
-      if (token.value) {
+      if (!token.value) {
         router.push({ name: "user-login", params: { view: "login" } });
         return;
       }
       userConfirmationDialog.value = true;
-
       fetchUserAddress();
     }
     function hideUserConfirmationDialog() {

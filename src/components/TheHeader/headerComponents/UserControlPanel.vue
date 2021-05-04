@@ -39,7 +39,6 @@ export default {
       showUserPanel.value = false;
     }
     function handleUserButton() {
-      console.log(userIsAdmin);
       if (token.value) {
         showUserPanel.value = !showUserPanel.value;
       } else {
@@ -68,7 +67,6 @@ export default {
       showUserPanel,
       token,
       userIsAdmin,
-
       hideUserPanel,
       handleUserButton,
       logout,

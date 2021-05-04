@@ -39,9 +39,10 @@
     </ul>
     <order-details
       v-if="showOrderDetails"
-      :order="this.selectedOrder"
-      :changeOrderStatus="this.allowOrderStatusChange"
-      @closeModal="this.closeModal"
+      :order="selectedOrder"
+      :changeOrderStatus="allowOrderStatusChange"
+      @closeModal="closeModal"
+      @orderStatusChanged="orderStatusChanged"
     ></order-details>
   </div>
 </template>
@@ -61,12 +62,13 @@ export default {
       type: Boolean,
     },
   },
-  setup() {
+  setup(props, context) {
     const selectedOrder = ref(null);
     const showOrderDetails = ref(false);
     const userOrderTableScroll = ref(false);
+
     const allowOrderStatusChange = computed(() => {
-      if (this.admin === true) {
+      if (props.admin === true) {
         return true;
       } else {
         return false;
@@ -90,13 +92,16 @@ export default {
       return Number(sum).toFixed(2);
     }
     function getOrderStatus(status) {
-      if (status === 0) {
+      if (parseInt(status) === 0) {
         return "Waiting for acceptance";
-      } else if (status === 1) {
+      } else if (parseInt(status) === 1) {
         return "In realization";
-      } else {
+      } else if (parseInt(status) === 2) {
         return "Realized";
       }
+    }
+    function orderStatusChanged() {
+      context.emit("orderStatusChanged");
     }
     return {
       selectedOrder,
@@ -108,6 +113,7 @@ export default {
       closeModal,
       calculateOrderValue,
       getOrderStatus,
+      orderStatusChanged,
     };
   },
 };

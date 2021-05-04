@@ -2,19 +2,17 @@
   <div class="addAddressBox">
     <button
       class="confirmationBox__formExitButton"
-      @click.prevent="this.$emit('exitButton')"
+      @click.prevent="$emit('exitButton')"
     >
       <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon>
     </button>
     <div>
-      <p v-if="this.userAddressList.length === 0">
-        Theres is no saved addresses.
-      </p>
+      <p v-if="userAddressList.length === 0">Theres is no saved addresses.</p>
       <drop-down
         v-else
         class="addAddress__dropdown"
-        :defaultCategory="this.createDefaultDropdownValue"
-        :listOfCategories="this.createDropDownListItems"
+        :defaultCategory="createDefaultDropdownValue"
+        :listOfCategories="createDropDownListItems"
         @categoryChange="setUserAddress"
       ></drop-down>
     </div>
@@ -23,7 +21,7 @@
       <div
         @click="clearFormError"
         class="confirmationForm__formControl"
-        :class="{ newAddressError: this.newAddressForm.name.error }"
+        :class="{ newAddressError: newAddressForm.name.error }"
       >
         <label for="Name">Name: </label
         ><input
@@ -37,7 +35,7 @@
       <div
         @click="clearFormError"
         class="confirmationForm__formControl"
-        :class="{ newAddressError: this.newAddressForm.surname.error }"
+        :class="{ newAddressError: newAddressForm.surname.error }"
       >
         <label for="Surname">Surname: </label
         ><input
@@ -51,7 +49,7 @@
       <div
         @click="clearFormError"
         class="confirmationForm__formControl"
-        :class="{ newAddressError: this.newAddressForm.address.error }"
+        :class="{ newAddressError: newAddressForm.address.error }"
       >
         <label for="Addres">Address: </label
         ><input
@@ -62,17 +60,17 @@
           v-model.trim="newAddressForm.address.value"
         />
       </div>
-      <p v-if="this.formErrorMsg">{{ formErrorMsg }}</p>
+      <p v-if="formErrorMsg">{{ formErrorMsg }}</p>
       <button
         type="submit"
         class="confirmationForm__button"
-        v-if="!this.formLoader"
+        v-if="!formLoader"
         @click.prevent="addNewAddress"
       >
         Confirm address
       </button>
       <loader v-else></loader>
-      <p v-if="this.addressUpdateResult">{{ addressUpdateResult }}</p>
+      <p v-if="addressUpdateResult">{{ addressUpdateResult }}</p>
     </form>
   </div>
 </template>
@@ -88,7 +86,8 @@ export default {
   emits: ["exitButton"],
   setup(props, context) {
     const store = useStore();
-    const token = useToken();
+    const { token } = useToken();
+
     const newAddressForm = reactive({
       name: { value: "", error: false },
       surname: { value: "", error: false },
@@ -104,7 +103,7 @@ export default {
     });
 
     const createDropDownListItems = computed(() => {
-      return this.userAddressList.map(
+      return userAddressList.value.map(
         (element) => `${element.name} ${element.surname} ${element.address}`
       );
     });
@@ -121,15 +120,17 @@ export default {
     });
 
     function setUserAddress(category, index) {
-      const addressObject = this.userAddressList[index];
-      this.$store.dispatch("UserAuth/setLastUsedUserAddress", addressObject);
+      const addressObject = userAddressList.value[index];
+      console.log(addressObject);
+      store.dispatch("UserAuth/setLastUsedUserAddress", addressObject);
+      context;
       context.emit("exitButton");
     }
 
     function clearFormError() {
-      this.formErrorMsg = null;
-      for (let key in this.newAddressForm) {
-        this.newAddressForm[key].error = false;
+      formErrorMsg.value = null;
+      for (let key in newAddressForm) {
+        newAddressForm[key].error = false;
       }
     }
 
@@ -138,10 +139,10 @@ export default {
         if (formValidation() === false) {
           return;
         }
-
+        const userToken = token.value;
         formLoader.value = true;
         const payload = {
-          token,
+          token: userToken,
           name: newAddressForm.name.value,
           surname: newAddressForm.surname.value,
           address: newAddressForm.address.value,
@@ -213,6 +214,7 @@ export default {
       createDefaultDropdownValue,
       setUserAddress,
       addNewAddress,
+      createDropDownListItems,
     };
   },
 };

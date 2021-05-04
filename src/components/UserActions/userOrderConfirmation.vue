@@ -2,16 +2,13 @@
   <div>
     <modal-dialog @closeDialog="this.$emit('hideUserConfirmationDialog')">
       <div class="confirmationBox">
-        <div
-          class="confirmationBox__pickAddressBox"
-          v-if="!this.lastUsedAddress"
-        >
+        <div class="confirmationBox__pickAddressBox" v-if="!lastUsedAddress">
           <h3>There is no delivery address</h3>
           <p>
             Click
             <button
               class="confirmationBox__pickAddressButton"
-              @click="this.showAddressForm = true"
+              @click="showAddressForm = true"
             >
               Here
             </button>
@@ -35,35 +32,32 @@
 
         <transition name="addNewAddress" mode="out-in">
           <add-address-form
-            v-if="this.showAddressForm"
-            @exitButton="this.showAddressForm = false"
+            v-if="showAddressForm"
+            @exitButton="showAddressForm = false"
           ></add-address-form>
         </transition>
 
         <div class="confirmationBox__addAdressBox__addressButtons">
-          <button @click="this.showAddressForm = !this.showAddressForm">
+          <button @click="showAddressForm = !showAddressForm">
             Add new address
           </button>
-          <button @click="this.handleOrderRequest">Confirm Order</button>
+          <button @click="handleOrderRequest">Confirm Order</button>
         </div>
       </div>
       <transition name="orderResult" mode="out-in">
-        <div
-          class="confirmationBox__orderResultBox"
-          v-if="this.orderResult.visible"
-        >
+        <div class="confirmationBox__orderResultBox" v-if="orderResult.visible">
           <h4>Order Request Result</h4>
           <loader
             class="orderResultBox__loader"
-            v-if="!this.orderResult.message"
+            v-if="!orderResult.message"
           ></loader>
           <div class="orderResultBox__resultDisplay" v-else>
             <span
               :style="
-                this.orderResult.result === true ? 'color:#3eaf7c' : 'color:red'
+                orderResult.result === true ? 'color:#3eaf7c' : 'color:red'
               "
               ><font-awesome-icon
-                v-if="this.orderResult.result === true"
+                v-if="orderResult.result === true"
                 :icon="['fa', 'check']"
               ></font-awesome-icon>
               <font-awesome-icon
@@ -72,7 +66,7 @@
               ></font-awesome-icon
             ></span>
             <p>
-              {{ this.orderResult.message }}
+              {{ orderResult.message }}
             </p>
           </div>
           <button class="orderResultBox__confirmButton" @click="confirmAction">
@@ -95,7 +89,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const token = useToken();
+    const { token } = useToken();
     const router = useRouter();
 
     const showAddressForm = ref(false);
@@ -108,14 +102,15 @@ export default {
     const lastUsedAddress = computed(() => {
       return store.getters["UserAuth/getLastUsedAddress"];
     });
+
     async function handleOrderRequest() {
       try {
-        this.orderResult.visible = true;
-        this.orderResult.loader = true;
-
+        orderResult.visible = true;
+        orderResult.loader = true;
+        const userToken = token.value;
         const payload = {
           cart: store.getters["Cart/getCart"],
-          token,
+          token: userToken,
         };
 
         const rawData = await fetch("http://localhost:3000/confirmOrder", {
@@ -127,30 +122,28 @@ export default {
         if (rawData.status === 406) {
           const data = await rawData.json();
           const productsUnavaliable = data.products;
-          this.orderResult.result = false;
-          this.orderResult.message =
-            "One or more products are no longer avaliable";
-          this.orderResult.productsUnavaliable = productsUnavaliable;
+          orderResult.result = false;
+          orderResult.message = "One or more products are no longer avaliable";
+          orderResult.productsUnavaliable = productsUnavaliable;
         } else if (rawData.status === 200) {
-          this.orderResult.result = true;
-          this.orderResult.message = "Order accepted";
+          orderResult.result = true;
+          orderResult.message = "Order accepted";
           store.dispatch("Cart/resetCart");
         } else {
-          this.orderResult.result = false;
-          this.orderResult.message =
-            "Shop couldnt accept order, try again later";
+          orderResult.result = false;
+          orderResult.message = "Shop couldnt accept order, try again later";
         }
-        this.orderResult.loader = false;
+        orderResult.loader = false;
       } catch (err) {
-        this.orderResult.loader = false;
+        orderResult.loader = false;
         console.log(err);
       }
     }
     function confirmAction() {
-      if (this.orderResult.result === true) {
+      if (orderResult.result === true) {
         router.push({ name: "user-orders" });
       } else {
-        this.orderResult.visible = false;
+        orderResult.visible = false;
       }
     }
     return {

@@ -5,6 +5,7 @@
       v-if="orders.length > 0"
       :userOrders="orders"
       :admin="true"
+      @orderStatusChanged="fetchChangedOrderData"
     ></user-orders-table>
     <p v-else>There is no orders</p>
     <loader v-if="loader"></loader>
@@ -39,7 +40,9 @@ export default {
   },
   setup() {
     const route = useRoute();
-
+    const page = computed(() => {
+      return route.query.page;
+    });
     const {
       fetchOrders,
       numberOfPages,
@@ -49,36 +52,11 @@ export default {
       handleChangePageRequest,
       fetchOrdersAsAdmin,
     } = useUserOrders();
-    /* async function fetchOrders(page) {
-      try {
-        const rawData = await fetch(
-          `http://localhost:3000/admin/getOrders?page=${page}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-
-        if (rawData.status !== 200) {
-          throw new Error("Couldnt fetched data from server");
-        }
-        const ordersData = await rawData.json();
-
-        const { data, totalItems } = ordersData;
-        const numberOfPages = Math.ceil(totalItems / 10);
-        orders.value = data;
-        numberOfPages.value = numberOfPages;
-      } catch (err) {
-        console.log(err);
-        store.dispatch("ErrorHandler/showError", err.message);
-      }
-    } */
+    function fetchChangedOrderData() {
+      fetchOrdersAsAdmin(page.value);
+    }
     onMounted(() => {
-      const page = computed(() => {
-        return route.query.page;
-      });
-      fetchOrdersAsAdmin(page);
+      fetchOrdersAsAdmin(page.value);
     });
     return {
       orders,
@@ -87,42 +65,10 @@ export default {
       numberOfPages,
       currentPage,
       handleChangePageRequest,
+      fetchChangedOrderData,
       fetchOrdersAsAdmin,
     };
   },
-  /* mounted() {
-    const page = this.$route.query.page;
-    this.fetchOrders(page);
-  }, */
-
-  /* methods: {
-    async fetchOrders(page) {
-      try {
-        const token = this.token.token;
-
-        const rawData = await fetch(
-          `http://localhost:3000/admin/getOrders?page=${page}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-
-        if (rawData.status !== 200) {
-          throw new Error("Couldnt fetched data from server");
-        }
-        const ordersData = await rawData.json();
-
-        const { data, totalItems } = ordersData;
-        const numberOfPages = Math.ceil(totalItems / 10);
-        this.orders = data;
-        this.numberOfPages = numberOfPages;
-      } catch (err) {
-        console.log(err);
-        this.$store.dispatch("ErrorHandler/showError", err.message);
-      }
-    }, */
 };
 </script>
 <style lang="scss">

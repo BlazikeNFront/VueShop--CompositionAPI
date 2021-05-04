@@ -3,41 +3,37 @@
     <h2>History of orders</h2>
 
     <user-orders-table
-      v-if="this.orders.length > 0"
-      :userOrders="this.orders"
+      v-if="orders.length > 0"
+      :userOrders="orders"
       :admin="false"
     ></user-orders-table>
     <p v-else>There is no history of orders</p>
-    <loader v-if="!this.orders"></loader>
+    <loader v-if="loader"></loader>
 
-    <button class="userOrder__updateButton" @click="this.fetchUserOrders">
+    <button class="userOrder__updateButton" @click="fetchOrdersAsUser">
       Update orders
     </button>
     <pagination-buttons
       class="searchResult__paginationButtons"
       :numberOfPages="numberOfPages"
       :currentPage="currentPage"
-      @pageChange="handleChangePageRequestAdmin"
-      @previousPageClick="
-        handleChangePageRequestAdmin(parseInt(this.currentPage) - 1)
-      "
-      @nextPageClick="
-        handleChangePageRequestAdmin(parseInt(this.currentPage) + 1)
-      "
+      @pageChange="handleChangePageRequest($event)"
+      @previousPageClick="handleChangePageRequest(parseInt(currentPage) - 1)"
+      @nextPageClick="handleChangePageRequest(parseInt(currentPage) + 1)"
     ></pagination-buttons>
   </section>
 </template>
 <script>
 import UserOrdersTable from "../../components/UserActions/userOrdersTable.vue";
 import PaginationButtons from "../../components/common/PaginationButtons.vue";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import useUserOrders from "../../components/hooks/userOrders.js";
 import { useRoute } from "vue-router";
+
 export default {
   setup() {
     const route = useRoute();
     const {
-      fetchOrders,
       numberOfPages,
       orders,
       loader,
@@ -46,57 +42,21 @@ export default {
       fetchOrdersAsUser,
     } = useUserOrders();
     onMounted(() => {
-      const page = route.query.page;
+      const page = computed(() => {
+        return route.query.page;
+      });
       fetchOrdersAsUser(page);
     });
     return {
-      fetchOrders,
       numberOfPages,
       orders,
       loader,
       currentPage,
       handleChangePageRequest,
+      fetchOrdersAsUser,
     };
   },
   components: { UserOrdersTable, PaginationButtons },
-
-  /* methods: {
-    async fetchUserOrders(page) {
-      try {
-        const rawData = await fetch(
-          `http://localhost:3000/getUserOrders?page=${page}`,
-          {
-            headers: { Authorization: this.token.token },
-          }
-        );
-        if (rawData.status !== 200) {
-          throw new Error("Couldnt fetched data from server");
-        }
-        if (rawData.status !== 200) {
-          throw new Error("Couldnt fetched data from server");
-        }
-        const ordersData = await rawData.json();
-
-        const { data, totalItems } = ordersData;
-        const numberOfPages = Math.ceil(totalItems / 10);
-        this.orders = data;
-        this.numberOfPages = numberOfPages;
-      } catch (err) {
-        console.log(err);
-        this.$store.dispatch("ErrorHandler/showError", err.message);
-      }
-    },
-    handleChangePageRequestAdmin(page) {
-      if (page < 1 || page > this.numberOfPages) {
-        return;
-      }
-      this.fetchUserOrders(page);
-      this.$router.push({
-        name: "user-orders",
-        query: { page: page },
-      });
-    },
-  }, */
 };
 </script>
 <style lang="scss">

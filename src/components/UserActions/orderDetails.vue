@@ -5,11 +5,9 @@
       width="95%"
       height="fit-content"
     >
-      <h4 class="orderDetailsView__h4">
-        Order Details for: {{ this.order._id }}
-      </h4>
-      <div class="orderDetails__listContainer" @scroll="this.setUserOrderClick">
-        <div class="userCart__arrowForMobile" v-if="!this.userOrderClick">
+      <h4 class="orderDetailsView__h4">Order Details for: {{ order._id }}</h4>
+      <div class="orderDetails__listContainer" @scroll="setUserOrderClick">
+        <div class="userCart__arrowForMobile" v-if="!userOrderClick">
           <font-awesome-icon :icon="['fa', 'arrow-right']"></font-awesome-icon>
         </div>
         <ul class="userCart__productList orderDetails__productList">
@@ -58,9 +56,10 @@
         <p class="orderDetailsView__p">Adress: Panstwo Dykty i kartonu</p>
       </div>
       <form
-        v-if="this.changeOrderStatus"
+        v-if="changeOrderStatus"
         class="orderStatusForm"
-        @submit.prevent="handleChangeOrderStatus(this.order._id)"
+        @submit.prevent="handleChangeOrderStatus(order._id)"
+        @click="clearMessage"
       >
         <p class="orderStatusForm__p">Change order Status:</p>
         <div class="orderStatusForm__formControl">
@@ -70,7 +69,7 @@
             name="ordersStatus"
             type="radio"
             value="1"
-            v-model="this.orderDetailsStatus"
+            v-model="orderDetailsStatus"
           />
         </div>
         <div class="orderStatusForm__formControl">
@@ -88,6 +87,7 @@
         <button class="orderStatusForm__button">Submit change</button>
         <loader class="orderStatusForm__loader" v-if="loader"></loader>
       </form>
+      <p v-if="orderStatusChangedResult">{{ orderStatusChangedResult }}</p>
     </modal-dialog>
   </div>
 </template>
@@ -101,15 +101,19 @@ export default {
   emits: ["orderStatusChanged", "closeModal"],
   setup(props, context) {
     const store = useStore();
-    const token = useToken();
+    const { token } = useToken();
+
     const orderDetailsStatus = ref(null);
     const orderDetailsModal = ref(false);
     const orderDeatilsModalMsg = ref(null);
     const loader = ref(false);
     const userOrderClick = ref(false);
-
+    const orderStatusChangedResult = ref(null);
     function setUserOrderClick() {
       userOrderClick.value = true;
+    }
+    function clearMessage() {
+      orderStatusChangedResult.value = null;
     }
     function closeModal() {
       store.dispatch("Admin/closeShowOrderDetails");
@@ -126,7 +130,7 @@ export default {
           {
             method: "POST",
             headers: {
-              Authorization: token,
+              Authorization: token.value,
               "Content-Type": "application/json",
             },
             body: await JSON.stringify(payload),
@@ -136,11 +140,13 @@ export default {
           throw new Error("Server did not accepted change of order");
         } else {
           loader.value = false;
+          orderStatusChangedResult.value = "Order Status Changed";
           context.emit("orderStatusChanged");
         }
       } catch (err) {
         console.log(err);
         loader.value = false;
+        orderStatusChangedResult.value = "Couldnt Changed order Status";
         store.dispatch("ErrorHandler/showError", err.message);
       }
     }
@@ -153,6 +159,8 @@ export default {
       loader,
       userOrderClick,
       setUserOrderClick,
+      clearMessage,
+      orderStatusChangedResult,
     };
   },
 };

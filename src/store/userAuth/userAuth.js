@@ -15,21 +15,18 @@ export default {
       state.token = payload.token;
     },
     handleAdminLogin(state, payload) {
-      state.token = payload.token;
+      state.token = payload;
       state.admin = true;
     },
     logout(state) {
       state.token = null;
+      state.admin = false;
     },
     setUserAddress(state, payload) {
       state.addresses.all = payload; //PAYLOAD SHOULD BE AN ARRAY
     },
     setLastUsedUserAddress(state, payload) {
       state.addresses.lastUsed = payload;
-    },
-    adminLogout(state) {
-      state.token = null;
-      state.admin = false;
     },
   },
   actions: {
@@ -48,11 +45,9 @@ export default {
         const dataJSON = await data.json();
 
         if (data.status !== 200) {
-          return dataJSON.message;
+          throw new Error(data.message);
         } else {
-          const payload = {
-            token: dataJSON,
-          };
+          const { token, userAdmin } = dataJSON;
           const localStorageUserCart = await this.dispatch(
             "Cart/fetchCartFromLocalStorage",
             {
@@ -60,16 +55,16 @@ export default {
             }
           );
           if (localStorageUserCart === false) {
-            this.dispatch("Cart/fetchCartFromDb", dataJSON.token, {
+            this.dispatch("Cart/fetchCartFromDb", token, {
               root: true,
             });
           }
-          console.log(dataJSON);
-          if (dataJSON.userAdmin === true) {
-            context.commit("handleAdminLogin", payload);
+
+          if (userAdmin === true) {
+            context.commit("handleAdminLogin", token);
             return;
           }
-          context.commit("handleLogin", payload);
+          context.commit("handleLogin", token);
         }
       } catch (err) {
         console.log(err);
@@ -80,7 +75,7 @@ export default {
     },
     async fetchUserAddress(context) {
       try {
-        const token = context.getters["getToken"].token;
+        const token = context.getters["getToken"];
 
         const rawData = await fetch("http://localhost:3000/getUserAddresses", {
           headers: { Authorization: token },
@@ -97,10 +92,6 @@ export default {
       }
     },
     logout(context) {
-      if (context.getters["getAdminState"] === true) {
-        context.commit("adminLogout");
-        return;
-      }
       context.commit("logout");
       this.dispatch("Cart/resetCartFron", {
         root: true,
@@ -109,7 +100,8 @@ export default {
     async setLastUsedUserAddress(context, payload) {
       try {
         context.commit("setLastUsedUserAddress", payload);
-        const token = context.getters["getToken"].token;
+        const token = context.getters["getToken"];
+
         const payloadForServer = {
           token,
           address: payload,
