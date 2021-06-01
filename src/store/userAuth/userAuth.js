@@ -76,9 +76,14 @@ export default {
     async fetchUserAddress(context) {
       try {
         const token = context.getters["getToken"];
-
+        const requestHeaders = new Headers();
+        requestHeaders.append("Content-Type", "application/json");
+        if (token) {
+          requestHeaders.append("Authorization", `Bearer ${token}`);
+        }
         const rawData = await fetch("http://localhost:3000/getUserAddresses", {
-          headers: { Authorization: token },
+          headers: requestHeaders,
+          credentials: "include",
         });
 
         if (rawData.status !== 200) {
@@ -101,18 +106,24 @@ export default {
       try {
         context.commit("setLastUsedUserAddress", payload);
         const token = context.getters["getToken"];
+        const requestHeaders = new Headers();
+        requestHeaders.append("Content-Type", "application/json");
+        if (token) {
+          requestHeaders.append("Authorization", `Bearer ${token}`);
+        }
 
         const payloadForServer = {
           token,
           address: payload,
         };
-        console.log("poszedl request");
+
         const responseFromServer = await fetch(
           "http://localhost:3000/updateDefaultUserAddress",
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: requestHeaders,
             body: await JSON.stringify(payloadForServer),
+            credentials: "include",
           }
         );
 

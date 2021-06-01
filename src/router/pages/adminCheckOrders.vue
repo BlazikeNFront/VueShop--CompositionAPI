@@ -5,12 +5,15 @@
       v-if="orders.length > 0"
       :userOrders="orders"
       :admin="true"
-      @orderStatusChanged="fetchChangedOrderData"
+      @orderStatusChanged="fetchOrdersAsAdmin(currentPage)"
     ></user-orders-table>
     <p v-else>There is no orders</p>
     <loader v-if="loader"></loader>
 
-    <button class="userOrders--adminView__button" @click="fetchOrdersAsAdmin">
+    <button
+      class="userOrders--adminView__button"
+      @click="fetchOrdersAsAdmin(currentPage)"
+    >
       FETCH ORDERS
     </button>
 
@@ -28,9 +31,7 @@
 import PaginationButtons from "../../components/common/PaginationButtons.vue";
 import UserOrdersTable from "../../components/UserActions/userOrdersTable.vue";
 
-import { computed, onMounted } from "vue";
-
-import { useRoute } from "vue-router";
+import { onMounted } from "vue";
 
 import useUserOrders from "../../components/hooks/userOrders.js";
 export default {
@@ -39,10 +40,6 @@ export default {
     UserOrdersTable,
   },
   setup() {
-    const route = useRoute();
-    const page = computed(() => {
-      return route.query.page;
-    });
     const {
       fetchOrders,
       numberOfPages,
@@ -52,11 +49,9 @@ export default {
       handleChangePageRequest,
       fetchOrdersAsAdmin,
     } = useUserOrders();
-    function fetchChangedOrderData() {
-      fetchOrdersAsAdmin(page.value);
-    }
+
     onMounted(() => {
-      fetchOrdersAsAdmin(page.value);
+      fetchOrdersAsAdmin(currentPage);
     });
     return {
       orders,
@@ -65,7 +60,7 @@ export default {
       numberOfPages,
       currentPage,
       handleChangePageRequest,
-      fetchChangedOrderData,
+
       fetchOrdersAsAdmin,
     };
   },

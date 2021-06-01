@@ -1,7 +1,7 @@
 <template>
   <div>
     <form
-      ref="addProductFrom"
+      ref="addProductForm"
       class="form-addProduct"
       @submit.prevent="handleFormRequest"
       @click="cleanErrors"
@@ -245,7 +245,6 @@
     <confirmation-modal
       v-if="formRequestConfirmation.visible"
       @closeDialog="closeModal"
-      @confirmError="closeModal"
     >
       <h4 class="addProduct__errorMsg__moddalText">
         {{ formRequestConfirmation.text }}
@@ -263,6 +262,7 @@ export default {
   },
   setup() {
     const store = useStore();
+    const addProductForm = ref(null);
     const formRequestConfirmation = reactive({ visible: false, text: null });
     const formInputs = reactive({
       typeOfProduct: { value: null, error: false, errorMsg: null },
@@ -390,7 +390,6 @@ export default {
             "add prooduct action // backend did not send productId"
           );
         }
-
         return responseJSON.productId;
       } catch (err) {
         console.log(err);
@@ -406,7 +405,7 @@ export default {
     function cleanForm() {
       for (const input in formInputs) {
         formInputs[input]["value"] = null;
-        ref["addProductFrom"].reset();
+        addProductForm.value.reset();
       }
     }
     return {
@@ -419,6 +418,7 @@ export default {
       addProduct,
       cleanErrors,
       cleanForm,
+      addProductForm,
     };
   },
 };

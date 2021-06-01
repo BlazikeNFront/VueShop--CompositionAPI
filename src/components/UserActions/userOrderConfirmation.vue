@@ -45,29 +45,51 @@
         </div>
       </div>
       <transition name="orderResult" mode="out-in">
-        <div class="confirmationBox__orderResultBox" v-if="orderResult.visible">
+        <div
+          class="confirmationBox__orderResultBox"
+          :class="{
+            orderResultBox__prodList: orderResult.productsUnavaliable,
+          }"
+          v-if="orderResult.visible"
+        >
           <h4>Order Request Result</h4>
           <loader
             class="orderResultBox__loader"
             v-if="!orderResult.message"
           ></loader>
           <div class="orderResultBox__resultDisplay" v-else>
-            <span
-              :style="
-                orderResult.result === true ? 'color:#3eaf7c' : 'color:red'
-              "
-              ><font-awesome-icon
-                v-if="orderResult.result === true"
-                :icon="['fa', 'check']"
-              ></font-awesome-icon>
-              <font-awesome-icon
-                v-else
-                :icon="['fas', 'times']"
-              ></font-awesome-icon
-            ></span>
-            <p>
-              {{ orderResult.message }}
-            </p>
+            <div class="orderResultBox__resultInformation">
+              <span
+                :style="
+                  orderResult.result === true ? 'color:#3eaf7c' : 'color:red'
+                "
+                ><font-awesome-icon
+                  v-if="orderResult.result === true"
+                  :icon="['fa', 'check']"
+                ></font-awesome-icon>
+                <font-awesome-icon
+                  v-else
+                  :icon="['fas', 'times']"
+                ></font-awesome-icon
+              ></span>
+              <p>
+                {{ orderResult.message }}
+              </p>
+            </div>
+            <div
+              class="orderResultBox__unavalibleProductsBox"
+              v-if="orderResult.productsUnavaliable"
+            >
+              <h4>Unavalible products:</h4>
+              <ul>
+                <li
+                  v-for="product in orderResult.productsUnavaliable"
+                  :key="product._id"
+                >
+                  <p>{{ product.name }}</p>
+                </li>
+              </ul>
+            </div>
           </div>
           <button class="orderResultBox__confirmButton" @click="confirmAction">
             OK
@@ -121,6 +143,7 @@ export default {
 
         if (rawData.status === 406) {
           const data = await rawData.json();
+          console.log(data);
           const productsUnavaliable = data.products;
           orderResult.result = false;
           orderResult.message = "One or more products are no longer avaliable";
@@ -229,6 +252,28 @@ export default {
 .orderResultBox__resultDisplay {
   @include flexLayout;
   width: 100%;
+  flex-direction: column;
+}
+.orderResultBox__resultInformation {
+  @include flexLayout;
+}
+.orderResultBox__unavalibleProductsBox {
+  @include flexLayout;
+  flex-direction: column;
+  height: 9rem;
+  overflow-y: scroll;
+  ul {
+    width: 100%;
+    li {
+      padding: 0.5rem;
+      width: 100%;
+
+      p {
+        width: 100%;
+        max-width: none;
+      }
+    }
+  }
 }
 .confirmationBox__pickAddressBox {
   h3 {
@@ -245,7 +290,9 @@ export default {
     @include button;
   }
 }
-
+.orderResultBox__prodList {
+  height: 35rem;
+}
 .confirmationBox__changeAddressButton {
   position: absolute;
   top: 0;

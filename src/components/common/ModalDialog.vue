@@ -1,6 +1,6 @@
 <template>
   <teleport to="body">
-    <back-drop @click="this.$emit('closeDialog')"></back-drop>
+    <back-drop @click="emitCloseDialog"></back-drop>
     <div class="modalDialog" :style="boxDimension">
       <h3 class="modalDialog__h3">Infomation</h3>
       <slot> </slot>

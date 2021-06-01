@@ -10,7 +10,10 @@
     <p v-else>There is no history of orders</p>
     <loader v-if="loader"></loader>
 
-    <button class="userOrder__updateButton" @click="fetchOrdersAsUser">
+    <button
+      class="userOrder__updateButton"
+      @click="fetchOrdersAsUser(currentPage)"
+    >
       Update orders
     </button>
     <pagination-buttons
@@ -26,13 +29,11 @@
 <script>
 import UserOrdersTable from "../../components/UserActions/userOrdersTable.vue";
 import PaginationButtons from "../../components/common/PaginationButtons.vue";
-import { onMounted, computed } from "vue";
+import { onMounted } from "vue";
 import useUserOrders from "../../components/hooks/userOrders.js";
-import { useRoute } from "vue-router";
 
 export default {
   setup() {
-    const route = useRoute();
     const {
       numberOfPages,
       orders,
@@ -42,10 +43,7 @@ export default {
       fetchOrdersAsUser,
     } = useUserOrders();
     onMounted(() => {
-      const page = computed(() => {
-        return route.query.page;
-      });
-      fetchOrdersAsUser(page);
+      fetchOrdersAsUser(currentPage);
     });
     return {
       numberOfPages,
