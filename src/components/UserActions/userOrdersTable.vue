@@ -53,8 +53,10 @@ export default {
   components: {
     OrderDetails,
   },
+
   props: {
     userOrders: {
+      type: Array,
       required: true,
     },
     admin: {

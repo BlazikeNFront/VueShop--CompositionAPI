@@ -54,6 +54,9 @@
         <p class="orderDetailsView__p">Name: Damian</p>
         <p class="orderDetailsView__p">Surname: Stachurski</p>
         <p class="orderDetailsView__p">Adress: Panstwo Dykty i kartonu</p>
+        <p class="orderDetailsView__p">
+          <span>Summary cost:</span> {{ summaryCost() }}$
+        </p>
       </div>
       <form
         v-if="changeOrderStatus"
@@ -62,7 +65,7 @@
         @click="clearMessage"
       >
         <p class="orderStatusForm__p">Change order Status:</p>
-        <div class="orderStatusForm__formControl">
+        <div class="orderStatusForm__formControl" v-if="order.status !== '1'">
           <label class="orderStatusForm__lablel" for="1">Accept Order</label>
           <input
             id="orderStatusOptions"
@@ -72,7 +75,7 @@
             v-model="orderDetailsStatus"
           />
         </div>
-        <div class="orderStatusForm__formControl">
+        <div class="orderStatusForm__formControl" v-if="order.status !== '2'">
           <label class="orderStatusForm__lablel" for="2"
             >Mark as realized</label
           >
@@ -87,7 +90,10 @@
         <button class="orderStatusForm__button">Submit change</button>
         <loader class="orderStatusForm__loader" v-if="loader"></loader>
       </form>
-      <p v-if="orderStatusChangedResult">{{ orderStatusChangedResult }}</p>
+      <div class="orderStatus__notifcation" v-if="this.orderDeatilsModalMsg">
+        <p v-if="orderStatusChangedResult">{{ orderStatusChangedResult }}</p>
+        <button @click="clearModal">OK</button>
+      </div>
     </modal-dialog>
   </div>
 </template>
@@ -95,45 +101,69 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import useToken from "../hooks/logger.js";
+import useHeaderHook from "../hooks/createHeaders.js";
 export default {
-  props: ["order", "changeOrderStatus"],
+  props: {
+    order: {
+      type: Object,
+      required: true,
+    },
+    changeOrderStatus: {
+      type: Boolean,
+    },
+  },
 
   emits: ["orderStatusChanged", "closeModal"],
   setup(props, context) {
     const store = useStore();
     const { token } = useToken();
+    const createHeaders = useHeaderHook();
 
     const orderDetailsStatus = ref(null);
+    const orderFormError = ref(false);
     const orderDetailsModal = ref(false);
-    const orderDeatilsModalMsg = ref(null);
+    const orderDeatilsModalMsg = ref(false);
     const loader = ref(false);
     const userOrderClick = ref(false);
     const orderStatusChangedResult = ref(null);
+
     function setUserOrderClick() {
       userOrderClick.value = true;
     }
     function clearMessage() {
       orderStatusChangedResult.value = null;
     }
-    function closeModal() {
-      store.dispatch("Admin/closeShowOrderDetails");
+    function summaryCost() {
+      const summaryCost = this.order.cart.reduce((acc, element) => {
+        const sum = Number(element.price) * Number(element.quantity);
+        return acc + sum;
+      }, 0);
+      return summaryCost.toFixed(2);
+    }
+    function clearModal() {
+      this.orderDeatilsModalMsg = null;
     }
     async function handleChangeOrderStatus(orderId) {
       try {
+        if (!orderDetailsStatus.value) {
+          orderFormError.value = true;
+          return;
+        }
+        orderFormError.value = false;
         loader.value = true;
+
+        const requestHeaders = createHeaders(token.value);
         const payload = {
           orderId,
           orderStatus: orderDetailsStatus.value,
         };
         const response = await fetch(
-          `http://localhost:3000/admin/changeOrderStatus`,
+          `https://vueshopcompback.herokuapp.com/admin/changeOrderStatus`,
           {
             method: "POST",
-            headers: {
-              Authorization: token.value,
-              "Content-Type": "application/json",
-            },
+            headers: requestHeaders,
             body: await JSON.stringify(payload),
+            credentials: "include",
           }
         );
         if (response.status !== 200) {
@@ -146,20 +176,22 @@ export default {
       } catch (err) {
         console.log(err);
         loader.value = false;
+        orderDeatilsModalMsg.value = err.message;
         orderStatusChangedResult.value = "Couldnt Changed order Status";
-        store.dispatch("ErrorHandler/showError", err.message);
+        store.dispatch("ModalHandler/showModal", err.message);
       }
     }
     return {
       orderDetailsStatus,
-      closeModal,
       orderDetailsModal,
       handleChangeOrderStatus,
       orderDeatilsModalMsg,
+      summaryCost,
       loader,
       userOrderClick,
       setUserOrderClick,
       clearMessage,
+      clearModal,
       orderStatusChangedResult,
     };
   },
@@ -188,8 +220,9 @@ export default {
 
 .orderDetails__listContainer {
   width: 100%;
+  max-height: 50rem;
   position: relative;
-  overflow-x: scroll;
+  overflow: scroll;
 }
 
 .orderDetails__products__thead {
@@ -207,8 +240,9 @@ export default {
 .orderDetailsView__userInformation {
   @include flexLayout;
   margin: 2rem;
-
   width: 100%;
+  flex-direction: column;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   font-size: 1.5rem;
   text-align: center;
@@ -216,9 +250,23 @@ export default {
 .orderStatusForm {
   @include flexLayout;
   margin: 2rem;
+  position: relative;
 }
+
 .orderDetailsView__p {
+  margin: 0.5rem;
   color: black;
+  span {
+    font-weight: 600;
+  }
+}
+.orderStatusForm__p-error {
+  position: absolute;
+  bottom: -2rem;
+  left: 50%;
+  transform: translate(-50%);
+  font-size: 1.5rem;
+  color: $red-error;
 }
 .orderStatusForm__formControl {
   @include flexLayout;
@@ -231,7 +279,6 @@ export default {
 }
 .orderStatusForm__p {
   margin-right: 1rem;
-
   font-size: 1.6rem;
   color: black;
 }
@@ -243,6 +290,42 @@ export default {
 }
 .orderStatusForm__loader {
   transform: scale(0.5);
+}
+.orderStatus__notifcation {
+  @include centerAbsolute;
+  @include flexLayout;
+  height: fit-content;
+  width: 90%;
+  max-width: 135rem;
+  height: 15rem;
+  flex-direction: column;
+  border: 2px solid $primiary-color;
+  border-radius: 10px;
+  background-color: #d9e4f5;
+  background-image: linear-gradient(315deg, #d9e4f5 0%, #f5e3e6 74%);
+  justify-content: space-evenly;
+  z-index: $modal-dialog;
+  overflow: hidden;
+  p {
+    @include mainFontBold;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  button {
+    @include button;
+    padding: 0.5rem 1rem;
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .orderDetails__listContainer {
+    overflow: initial;
+    overflow-y: scroll;
+  }
+  .orderDetailsView__userInformation {
+    flex-direction: row;
+  }
 }
 </style>
  

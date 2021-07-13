@@ -19,28 +19,31 @@ export default {
     setCart(state, payload) {
       state.cart = payload;
     },
-    toggleCart(state, payload) {
+    toggleCartBarView(state, payload) {
       state.showCart = payload;
-      console.log(state.showCart);
     },
   },
   actions: {
-    toggleCart(context) {
+    toggleCartBarView(context) {
       const curentState = context.getters["getShowCart"];
-
-      context.commit("toggleCart", !curentState);
+      context.commit("toggleCartBarView", !curentState);
     },
-    async fetchCartFromDb(context, token) {
+
+    async fetchCartFromDb(context) {
       try {
+        const token = context.rootGetters["UserAuth/getToken"] || null;
         const requestHeaders = new Headers();
         requestHeaders.append("Content-Type", "application/json");
         if (token) {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
-        const rawData = await fetch("http://localhost:3000/getUserCart", {
-          headers: requestHeaders,
-          credentials: "include",
-        });
+        const rawData = await fetch(
+          "https://vueshopcompback.herokuapp.com/getUserCart",
+          {
+            headers: requestHeaders,
+            credentials: "include",
+          }
+        );
         if (rawData.status !== 200) {
           throw new Error("Server couldnt update the cart");
         }
@@ -87,7 +90,7 @@ export default {
       const id = payload;
 
       const newCard = [...context.getters.getCart];
-      const productIndex = newCard.findIndex((product) => product.id === id);
+      const productIndex = newCard.findIndex((product) => product._id === id);
 
       newCard.splice(productIndex, 1);
 
@@ -109,18 +112,19 @@ export default {
       try {
         const cart = context.getters["getCart"];
         const token = context.rootGetters["UserAuth/getToken"];
+        if (!token) {
+          return;
+        }
         const requestHeaders = new Headers();
         requestHeaders.append("Content-Type", "application/json");
         if (token) {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
-
         const payload = {
           cart,
-          token,
         };
         const updateCartResult = await fetch(
-          "http://localhost:3000/updateUserCart",
+          "https://vueshopcompback.herokuapp.com/updateUserCart",
           {
             method: "POST",
             headers: requestHeaders,

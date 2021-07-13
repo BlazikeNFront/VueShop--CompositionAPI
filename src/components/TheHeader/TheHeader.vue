@@ -50,7 +50,12 @@ export default {
 }
 .header__userActions {
   @include flexLayout;
-  width: 8rem;
+  width: 4rem;
+}
+@media (min-width: 425px) {
+  .header__userActions {
+    width: 8rem;
+  }
 }
 @media (min-width: 768px) {
   .header__userActions {

@@ -35,6 +35,9 @@ export default {
       type: Number,
     },
   },
+
+  emits: ["valueChange"],
+
   setup(props, context) {
     const initNumber = ref(props.initialNumber || 1);
     function handleClick(number) {
@@ -62,7 +65,6 @@ export default {
   @include flexLayout;
   flex-direction: column;
   label {
-    color: black;
     font-size: $font-md;
   }
 }

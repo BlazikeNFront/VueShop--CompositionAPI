@@ -12,15 +12,15 @@ export default {
   },
   mutations: {
     handleLogin(state, payload) {
-      state.token = payload.token;
+      state.token = payload;
     },
+
     handleAdminLogin(state, payload) {
       state.token = payload;
       state.admin = true;
     },
     logout(state) {
       state.token = null;
-      state.admin = false;
     },
     setUserAddress(state, payload) {
       state.addresses.all = payload; //PAYLOAD SHOULD BE AN ARRAY
@@ -28,63 +28,78 @@ export default {
     setLastUsedUserAddress(state, payload) {
       state.addresses.lastUsed = payload;
     },
+    adminLogout(state) {
+      state.token = null;
+      state.admin = false;
+    },
   },
   actions: {
-    async handleLogin(context, payload) {
-      try {
-        const userData = {
-          email: payload.userName,
-          password: payload.password,
+    //login is made out of promises instead of async await because i want to handle login errors in userLogin component where i use async await syntax (  when async function made of others async function -- catch do not appear in higher order functions so its 'invisible' in catch block in userLogin compononet);
+    handleLogin(context, payload) {
+      const userData = {
+        email: payload.userName,
+        password: payload.password,
+      };
+      return new Promise((resolve, reject) => {
+        const userDataJSON = () => {
+          return new Promise((resolve) => {
+            const json = JSON.stringify(userData);
+            resolve(json);
+          });
         };
-        const data = await fetch("http://localhost:3000/userAuth", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: await JSON.stringify(userData),
-        });
 
-        const dataJSON = await data.json();
-
-        if (data.status !== 200) {
-          throw new Error(data.message);
-        } else {
-          const { token, userAdmin } = dataJSON;
-          const localStorageUserCart = await this.dispatch(
-            "Cart/fetchCartFromLocalStorage",
-            {
-              root: true,
-            }
-          );
-          if (localStorageUserCart === false) {
-            this.dispatch("Cart/fetchCartFromDb", token, {
-              root: true,
+        userDataJSON().then((userDataJSON) => {
+          fetch("https://vueshopcompback.herokuapp.com/userAuth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: userDataJSON,
+            credentials: "include",
+          })
+            .then((data) => {
+              if (data.status !== 200) {
+                throw data;
+              } else {
+                return data.json();
+              }
+            })
+            .then((dataJSON) => {
+              const tokenPayload = dataJSON.token;
+              context.commit("handleLogin", tokenPayload);
+              resolve(); //user shop cart disptaches are not essential ...
+              const localStorageUserCart = this.dispatch(
+                "Cart/fetchCartFromLocalStorage",
+                {
+                  root: true,
+                }
+              );
+              if (localStorageUserCart === false) {
+                this.dispatch("Cart/fetchCartFromDb", dataJSON.token, {
+                  root: true,
+                });
+              }
+            })
+            .catch((error) => {
+              reject(error);
             });
-          }
-
-          if (userAdmin === true) {
-            context.commit("handleAdminLogin", token);
-            return;
-          }
-          context.commit("handleLogin", token);
-        }
-      } catch (err) {
-        console.log(err);
-        this.dispatch("ErrorHandler/showError", err.message, {
-          root: true,
         });
-      }
+      });
     },
     async fetchUserAddress(context) {
       try {
-        const token = context.getters["getToken"];
+        const token = context.rootGetters["UserAuth/getToken"] || null;
         const requestHeaders = new Headers();
         requestHeaders.append("Content-Type", "application/json");
         if (token) {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
-        const rawData = await fetch("http://localhost:3000/getUserAddresses", {
-          headers: requestHeaders,
-          credentials: "include",
-        });
+
+        const rawData = await fetch(
+          "https://vueshopcompback.herokuapp.com/getUserAddresses",
+          {
+            headers: requestHeaders,
+            credentials: "include",
+          }
+        );
 
         if (rawData.status !== 200) {
           throw new Error("Server couldnt fetch user address");
@@ -97,6 +112,10 @@ export default {
       }
     },
     logout(context) {
+      if (context.getters["getAdminState"] === true) {
+        context.commit("adminLogout");
+        return;
+      }
       context.commit("logout");
       this.dispatch("Cart/resetCartFron", {
         root: true,
@@ -105,20 +124,19 @@ export default {
     async setLastUsedUserAddress(context, payload) {
       try {
         context.commit("setLastUsedUserAddress", payload);
-        const token = context.getters["getToken"];
+        const token = context.rootGetters["UserAuth/getToken"] || null;
         const requestHeaders = new Headers();
         requestHeaders.append("Content-Type", "application/json");
         if (token) {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
-
         const payloadForServer = {
           token,
           address: payload,
         };
 
         const responseFromServer = await fetch(
-          "http://localhost:3000/updateDefaultUserAddress",
+          "https://vueshopcompback.herokuapp.com/updateDefaultUserAddress",
           {
             method: "POST",
             headers: requestHeaders,

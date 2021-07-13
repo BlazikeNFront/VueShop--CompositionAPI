@@ -3,9 +3,15 @@
     <div class="footerSingleList">
       <h2>COMPANY</h2>
       <ul class="footerSingleList__listBox">
-        <li class="footerSingleList__listElement"><p>About Us</p></li>
-        <li class="footerSingleList__listElement"><p>Partners</p></li>
-        <li class="footerSingleList__listElement"><p>TAIMEN Support</p></li>
+        <li class="footerSingleList__listElement">
+          <router-link to="/">About Us</router-link>
+        </li>
+        <li class="footerSingleList__listElement">
+          <router-link to="/">Partners</router-link>
+        </li>
+        <li class="footerSingleList__listElement">
+          <router-link to="/">TAIMEN Support</router-link>
+        </li>
         <li class="footerSingleList__listElement">
           <p>Terms and condition</p>
         </li>
@@ -14,66 +20,101 @@
     <div class="footerSingleList">
       <h2>ACCOUNT</h2>
       <ul class="footerSingleList__listBox">
-        <li class="footerSingleList__listElement"><p>Account</p></li>
-        <li class="footerSingleList__listElement"><p>Sign in</p></li>
-        <li class="footerSingleList__listElement"><p>Sign Up</p></li>
-        <li class="footerSingleList__listElement"><p>Orders</p></li>
+        <li class="footerSingleList__listElement">
+          <router-link :to="{ name: 'user-login', params: { view: 'login' } }"
+            >Sign in</router-link
+          >
+        </li>
+        <li class="footerSingleList__listElement">
+          <router-link :to="{ name: 'user-signUp', params: { view: 'signUp' } }"
+            >Sign Up</router-link
+          >
+        </li>
+        <li class="footerSingleList__listElement">
+          <router-link :to="{ name: 'user-orders' }">Orders</router-link>
+        </li>
       </ul>
     </div>
     <div class="footerSingleList">
       <h2>CONTACT US</h2>
       <ul class="footerSingleList__listBox">
         <li class="footerSingleList__listElement">
-          <div class="footerSingleList__box">
+          <address class="footerSingleList__box">
             <font-awesome-icon
               :icon="['fas', 'map-marker-alt']"
             ></font-awesome-icon>
             <p class="footerSingleList__paragraph">
               2534 London Suite B Downers Grove, IL 60515
             </p>
-          </div>
+          </address>
         </li>
         <li class="footerSingleList__listElement">
-          <div class="footerSingleList__box">
+          <address class="footerSingleList__box">
             <font-awesome-icon
               :icon="['fas', 'envelope']"
               class="envelope_icon"
             ></font-awesome-icon>
-            <p class="footerSingleList__paragraph">sales@taimen.com</p>
-          </div>
+            <a
+              href="mailto: sales@taimen.com"
+              class="footerSingleList__paragraph"
+            >
+              sales@taimen.com
+            </a>
+          </address>
         </li>
         <li class="footerSingleList__listElement">
-          <div class="footerSingleList__box">
+          <address class="footerSingleList__box">
             <font-awesome-icon
               :icon="['fas', 'envelope']"
               class="envelope_icon"
             ></font-awesome-icon>
-            <p class="footerSingleList__paragraph">support@taimen.com</p>
-          </div>
+            <a
+              href="mailto:support@taimen.com"
+              class="footerSingleList__paragraph"
+            >
+              support@taimen.com
+            </a>
+          </address>
         </li>
         <li class="footerSingleList__listElement">
-          <div class="footerSingleList__box">
+          <address class="footerSingleList__box">
             <font-awesome-icon :icon="['fas', 'phone']"></font-awesome-icon>
-            <p class="footerSingleList__paragraph">888-777-666</p>
-          </div>
+            <a href="tel:888-777-666" class="footerSingleList__paragraph"
+              >888-777-666</a
+            >
+          </address>
         </li>
         <li class="footerSingleList__listElement">
-          <div class="footerSingleList__box">
+          <address class="footerSingleList__box">
             <font-awesome-icon :icon="['fas', 'fax']"></font-awesome-icon>
-            <p class="footerSingleList__paragraph">(324) 534-8824</p>
-          </div>
+            <a href="tel:324-534-8824" class="footerSingleList__paragraph"
+              >(324) 534-8824</a
+            >
+          </address>
         </li>
       </ul>
       <div class="icons">
-        <div class="icons__facebookIcon">
+        <a
+          href="https://www.facebook.com/"
+          target="_blank"
+          class="icons__facebookIcon"
+        >
           <font-awesome-icon :icon="['fab', 'facebook']"></font-awesome-icon>
-        </div>
-        <div class="icons__twitterIcon">
+        </a>
+        <a
+          href="https://www.twitter.com/"
+          target="_blank"
+          class="icons__twitterIcon"
+        >
           <font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon>
-        </div>
-        <div class="icons__instagramIcon">
+        </a>
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          class="icons__instagramIcon"
+        >
           <font-awesome-icon :icon="['fab', 'instagram']"></font-awesome-icon>
-        </div>
+        </a>
       </div>
     </div>
   </footer>
@@ -109,6 +150,10 @@ export default {};
   margin-top: 1rem;
   width: 100%;
   text-align: center;
+  a {
+    text-decoration: none;
+    color: black;
+  }
 }
 .footerSingleList__box {
   @include flexLayout;
@@ -135,6 +180,10 @@ export default {};
   width: 100%;
   justify-content: space-around;
   font-size: $font-bg;
+  color: black;
+  a {
+    color: black;
+  }
   & * {
     width: 2.5rem;
     cursor: pointer;

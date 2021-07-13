@@ -77,6 +77,7 @@
 <script>
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
+import useHeaderHook from "../hooks/createHeaders.js";
 import useToken from "../hooks/logger.js";
 import DropDown from "../common/dropDown.vue";
 export default {
@@ -87,6 +88,7 @@ export default {
   setup(props, context) {
     const store = useStore();
     const { token } = useToken();
+    const createHeaders = useHeaderHook();
 
     const newAddressForm = reactive({
       name: { value: "", error: false },
@@ -110,9 +112,8 @@ export default {
 
     const createDefaultDropdownValue = computed(() => {
       if (store.getters["UserAuth/getLastUsedAddress"]) {
-        const { name, surname, address } = store.getters[
-          "UserAuth/getLastUsedAddress"
-        ];
+        const { name, surname, address } =
+          store.getters["UserAuth/getLastUsedAddress"];
         return `${name} ${surname} ${address}`;
       } else {
         return createDropDownListItems.value[0];
@@ -121,9 +122,7 @@ export default {
 
     function setUserAddress(category, index) {
       const addressObject = userAddressList.value[index];
-      console.log(addressObject);
       store.dispatch("UserAuth/setLastUsedUserAddress", addressObject);
-      context;
       context.emit("exitButton");
     }
 
@@ -131,44 +130,6 @@ export default {
       formErrorMsg.value = null;
       for (let key in newAddressForm) {
         newAddressForm[key].error = false;
-      }
-    }
-
-    async function addNewAddress() {
-      try {
-        if (formValidation() === false) {
-          return;
-        }
-        const userToken = token.value;
-        formLoader.value = true;
-        const payload = {
-          token: userToken,
-          name: newAddressForm.name.value,
-          surname: newAddressForm.surname.value,
-          address: newAddressForm.address.value,
-        };
-        const postResult = await fetch("http://localhost:3000/addUserAddress", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: await JSON.stringify(payload),
-        });
-        if (postResult.status !== 200) {
-          formLoader.value = false;
-          throw new Error("Server did not accepted address");
-        } else {
-          formLoader.value = false;
-          addressUpdateResult.value = "Address added successfully";
-          clearFormError();
-          clearUserInputs();
-        }
-      } catch (err) {
-        formLoader.value = false;
-        store.dispatch("ErrorHandler/showError", err.message);
-      }
-    }
-    function clearUserInputs() {
-      for (let key in newAddressForm) {
-        newAddressForm[key].value = "";
       }
     }
     function formValidation() {
@@ -205,6 +166,54 @@ export default {
         return false;
       }
     }
+    async function addNewAddress() {
+      try {
+        if (formValidation() === false) {
+          return;
+        }
+        formLoader.value = true;
+
+        const payload = {
+          name: newAddressForm.name.value,
+          surname: newAddressForm.surname.value,
+          address: newAddressForm.address.value,
+        };
+
+        const requestHeaders = createHeaders(token.value);
+
+        const postResult = await fetch(
+          "https://vueshopcompback.herokuapp.com/addUserAddress",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: await JSON.stringify(payload),
+            credentials: "include",
+          }
+        );
+        if (postResult.status !== 200) {
+          formLoader.value = false;
+          throw new Error("Server did not accepted address");
+        } else {
+          formLoader.value = false;
+          addressUpdateResult.value = "Address added successfully";
+          clearFormError();
+          clearUserInputs();
+          const userAddresses = await postResult.json();
+
+          store.dispatch("UserAuth/setUserAddresses", userAddresses.all);
+          store.dispatch("UserAuth/setLastUsedUserAddress", payload);
+        }
+      } catch (err) {
+        formLoader.value = false;
+        store.dispatch("ModalHandler/showModal", err.message);
+      }
+    }
+    function clearUserInputs() {
+      for (let key in newAddressForm) {
+        newAddressForm[key].value = "";
+      }
+    }
+
     return {
       newAddressForm,
       formErrorMsg,
@@ -227,6 +236,8 @@ export default {
   padding: 1.5rem;
   padding-top: 2.5rem;
   width: 28rem;
+  height: 100%;
+  min-height: 63rem;
   opacity: 1;
 
   h4 {
@@ -294,7 +305,7 @@ export default {
     border-radius: 0 0 20px 20px;
     background-color: $main-color;
     text-align: center;
-
+    overflow: hidden;
     z-index: $addAddressDropDown;
     cursor: pointer;
 
@@ -326,7 +337,7 @@ export default {
     padding: 1rem;
     border: none;
     border-bottom: 2px solid #2c3e50;
-    border-radius: 10px;
+    border-radius: 20px;
     background-color: rgba(255, 255, 255, 0.2);
     background: transparent;
     font-family: inherit;
@@ -340,9 +351,10 @@ export default {
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
     border: none;
-    box-shadow: 0 0 0 30px #f5e3e6 inset;
+    border-radius: 20px;
+    box-shadow: 0 0 0 30px #3cc9ce inset;
     -webkit-text-fill-color: #2c3e50;
-    -webkit-box-shadow: 0 0 0 30px #f5e3e6 inset;
+    -webkit-box-shadow: 0 0 0 30px #3cc9ce inset;
   }
 }
 
@@ -352,8 +364,9 @@ export default {
 
 .confirmationForm__button {
   @include button;
-  margin-top: 2rem;
+  margin-top: 10rem;
   padding: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: 1px;
 }
@@ -361,7 +374,7 @@ export default {
   @include button;
   position: absolute;
   top: 1rem;
-  right: 4rem;
+  right: 1rem;
   margin: 0;
   width: 3rem;
   height: 3rem;
@@ -380,8 +393,8 @@ export default {
     top: 0;
     left: 50%;
     width: 40rem;
+    min-height: 50rem;
     opacity: 1;
-
     transform: translate(-50%);
     .customSelect {
       svg {

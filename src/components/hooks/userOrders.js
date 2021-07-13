@@ -59,10 +59,17 @@ export default function useUserOrders() {
   }
   async function fetchOrdersAsUser(page) {
     try {
+      const requestHeaders = new Headers();
+      requestHeaders.append("Content-Type", "application/json");
+      if (token.value) {
+        requestHeaders.append("Authorization", `Bearer ${token.value}`);
+      }
+
       const rawData = await fetch(
-        `http://localhost:3000/getUserOrders?page=${page}`,
+        `https://vueshopcompback.herokuapp.com/getUserOrders?page=${page}`,
         {
-          headers: { Authorization: token.value },
+          headers: requestHeaders,
+          credentials: "include",
         }
       );
       if (rawData.status !== 200) {
@@ -78,17 +85,22 @@ export default function useUserOrders() {
       orders.value = data;
     } catch (err) {
       console.log(err);
-      store.dispatch("ErrorHandler/showError", err.message);
+      store.dispatch("ModalHandler/showModal", err.message);
     }
   }
   async function fetchOrdersAsAdmin(page) {
     try {
+      const requestHeaders = new Headers();
+      requestHeaders.append("Content-Type", "application/json");
+
+      if (token.value) {
+        requestHeaders.append("Authorization", `Bearer ${token.value}`);
+      }
       const rawData = await fetch(
-        `http://localhost:3000/admin/getOrders?page=${page}`,
+        `https://vueshopcompback.herokuapp.com/admin/getOrders?page=${page}`,
         {
-          headers: {
-            Authorization: token.value,
-          },
+          headers: requestHeaders,
+          credentials: "include",
         }
       );
 
@@ -102,7 +114,7 @@ export default function useUserOrders() {
       orders.value = data;
     } catch (err) {
       console.log(err);
-      store.dispatch("ErrorHandler/showError", err.message);
+      store.dispatch("ModalHandler/showModal", err.message);
     }
   }
   return {

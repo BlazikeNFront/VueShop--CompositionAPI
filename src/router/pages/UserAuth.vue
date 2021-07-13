@@ -1,0 +1,142 @@
+<template>
+  <div class="userAuth">
+    <div
+      class="userAuth__logoBox"
+      :class="{ loginToSignupAnim: !this.showUserLogin }"
+    >
+      <div class="userAuth__companyLogoText"></div>
+      <div
+        class="userAuth__companyLogoIcon"
+        :class="{ iconReverseAnim: !this.showUserLogin }"
+      ></div>
+    </div>
+    <user-login
+      :class="{ changeViewTransition: !this.showUserLogin }"
+      @changeView="changeView"
+    ></user-login>
+    <user-sign-up
+      :class="{ changeViewTransition: this.showUserLogin }"
+      @changeView="changeView"
+    ></user-sign-up>
+  </div>
+</template>
+<script>
+import userLogin from "../../components/userAuth/userLogin.vue";
+import UserSignUp from "../../components/userAuth/userSignUp.vue";
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+export default {
+  components: { userLogin, UserSignUp },
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const showUserLogin = computed(() => {
+      if (route.params.view === "login") {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    function changeView() {
+      if (showUserLogin.value) {
+        router.push("/User/signUp");
+      } else {
+        router.push("/User/login");
+      }
+    }
+    return { changeView, showUserLogin };
+  },
+};
+</script>
+<style lang="scss">
+.userAuth {
+  @include flexLayout;
+  @include greenToBlueGradient;
+  position: relative;
+  margin-left: 3%;
+  width: 95%;
+  height: 100%;
+  min-height: 65rem;
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px black;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  transition: all 1s;
+}
+.userAuth__logoBox {
+  width: 100%;
+  height: 27rem;
+}
+
+.userAuth__companyLogoText {
+  margin: 0 auto;
+  width: 29rem;
+  height: 12rem;
+  background-image: url("../../assets/companyTextLogo.png");
+  background-size: cover;
+}
+.userAuth__companyLogoIcon {
+  margin: 0 auto;
+  width: 23rem;
+  height: 14rem;
+  background-image: url("../../assets/companyFishIcon.png");
+  background-size: cover;
+  transform: scaleX(1);
+  transition: all 2s;
+}
+
+.loginToSignupAnim {
+  transition: all 2s;
+}
+.changeViewTransition {
+  display: none;
+}
+
+.iconReverseAnim {
+  transform: scaleX(-1);
+}
+@media (min-width: 1024px) {
+  .userAuth {
+    margin: 0 auto;
+    width: 90%;
+
+    max-width: $max-width;
+
+    flex-direction: row;
+    justify-content: initial;
+  }
+  .userAuth__logoBox {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10rem 0 10rem 0;
+    width: 50%;
+    height: 70rem;
+
+    border-radius: 10px;
+    transition: all 2s;
+  }
+  .loginToSignupAnim {
+    transition: all 2s;
+    transform: translateX(-90%);
+  }
+  .changeViewTransition {
+    display: flex;
+    opacity: 0;
+  }
+}
+@media (min-width: 1440px) {
+  .userAuth__logoBox {
+    padding: 5rem 0 10rem 0;
+  }
+  .userAuth__companyLogoText {
+    width: 40rem;
+    height: 15rem;
+  }
+  .userAuth__companyLogoIcon {
+    width: 36rem;
+    height: 23rem;
+  }
+}
+</style>

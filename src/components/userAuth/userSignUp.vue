@@ -19,7 +19,9 @@
             autocomplete="email"
           />
 
-          <p>{{ formErrors.userNameErrorMsg }}</p>
+          <p class="loginFormControl__errorMsg">
+            {{ formErrors.userNameErrorMsg }}
+          </p>
         </div>
         <div class="loginFormControl">
           <label class="loginForm_label" for="signupPassword">Password:</label>
@@ -58,7 +60,7 @@
       </button>
       <loader v-if="loader"></loader>
       <p class="signUpLink">
-        U dont have an account? Click
+        U already have an account? Click
         <span class="loginForm__routerLink" @click="this.$emit('changeView')"
           >Here</span
         >
@@ -80,14 +82,16 @@
 import { ref, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import useHeaderHook from "../hooks/createHeaders.js";
 export default {
   emits: ["changeView"],
   setup() {
     const store = useStore();
     const router = useRouter();
-    const email = ref("");
-    const userPassword = ref("");
-    const confirmPassword = ref("");
+    const createHeaders = useHeaderHook();
+    const email = ref(null);
+    const userPassword = ref(null);
+    const confirmPassword = ref(null);
     const formErrors = reactive({
       passwordErrorMsg: null,
       userNameErrorMsg: null,
@@ -115,12 +119,15 @@ export default {
           email: email.value,
           password: userPassword.value,
         };
-
-        const data = await fetch("http://localhost:3000/SignUp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
+        const requestHeaders = createHeaders();
+        const data = await fetch(
+          "https://vueshopcompback.herokuapp.com/SignUp",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: await JSON.stringify(userData),
+          }
+        );
         const dataJSON = await data.json();
 
         if (data.status !== 200) {
@@ -134,13 +141,13 @@ export default {
         loader.value = false;
       } catch (err) {
         loader.value = false;
-
-        store.dispatch("ErrorHandler/showError", err.message);
+        store.dispatch("ModalHandler/showModal", err.message);
       }
     }
 
     function checkForm() {
-      const regexForEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      const regexForEmail =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
       const regexForPassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //Requirements -minimum eight characters, at least one letter and one number
 
@@ -208,30 +215,16 @@ export default {
     margin: 1rem;
     font-size: $font-bg;
   }
-  .formControl {
-    @include flexLayout;
-    margin: 2rem;
-    flex-direction: column;
-
-    input {
-      width: 100%;
-      padding: 5%;
-      font-size: $font-md;
-      border: 2px solid $primiary-color;
-      background-color: transparent;
-      color: $primiary-color;
-    }
-  }
 }
 .loginFormControl__button--signUp {
   margin-top: 2rem;
 }
 .signUpForm__errorMsg {
-  color: $primiary-color;
+  color: $red-error;
   font-size: $font-bg;
 }
 .userInputError {
-  border: 2px solid red;
+  border: 2px solid $red-error;
 }
 @media (min-width: 1024px) {
   .userAuth__userSignUp {

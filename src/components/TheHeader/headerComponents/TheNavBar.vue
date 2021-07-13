@@ -33,14 +33,11 @@ nav {
   width: 100%;
   max-width: 150rem;
   height: 4rem;
-
-  z-index: 100;
+  z-index: 1000;
   ul {
-    /*  @include centerWithTranslate; */
     @include flexLayout;
     width: 100%;
     height: 100%;
-
     justify-content: space-around;
   }
 }

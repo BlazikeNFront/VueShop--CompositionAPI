@@ -4,8 +4,10 @@
       <drop-down
         class="searchBarContainer__dropdown"
         defaultCategory="Search In"
+        :class="{ clickedDropDownStyle: dropDownVisibility }"
         :listOfCategories="['Rods', 'Reels', 'Lures', 'Lines', 'Any']"
         @categoryChange="addCategoryToSearchQuery"
+        @selectCategory="setDropDownStyles"
       ></drop-down>
       <div class="searchBarInput" @click.prevent="submitSearchBarForm">
         <input
@@ -15,7 +17,7 @@
           :placeholder="placeholder"
           v-model.trim="searBarInputValue"
         />
-        <button type="submit">
+        <button type="submit" aria-label="Toggle search action">
           <font-awesome-icon
             :icon="['fa', 'search']"
             class="searchBarContainer__submitIcon"
@@ -37,8 +39,11 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+
     const searBarInputValue = ref("");
     const selectedCategory = ref(null);
+    const dropDownVisibility = ref(false);
+
     const placeholder = computed(() => {
       if (selectedCategory.value) {
         return `Search in ${selectedCategory.value}`;
@@ -46,6 +51,15 @@ export default {
         return "Search products";
       }
     });
+
+    function setDropDownStyles(e) {
+      if (e) {
+        dropDownVisibility.value = true;
+      } else {
+        dropDownVisibility.value = false;
+      }
+    }
+
     function addCategoryToSearchQuery(e) {
       if (e === "Any") {
         selectedCategory.value = null;
@@ -53,6 +67,7 @@ export default {
       }
       selectedCategory.value = e;
     }
+
     function submitSearchBarForm() {
       if (searBarInputValue.value.length === 0) {
         return;
@@ -62,7 +77,7 @@ export default {
       if (selectedCategory.value !== null) {
         query = query + ` ${selectedCategory.value}`;
       }
-      console.log(query);
+
       const payload = {
         query,
       };
@@ -77,7 +92,9 @@ export default {
     }
     return {
       searBarInputValue,
+      setDropDownStyles,
       placeholder,
+      dropDownVisibility,
       addCategoryToSearchQuery,
       submitSearchBarForm,
     };
@@ -102,23 +119,21 @@ export default {
     border: none;
     background: transparent;
     font-size: 1.2rem;
-
     font-family: inherit;
     font-weight: 600;
     text-align: center;
 
-    &:focus {
-      outline: none;
+    &::placeholder {
+      color: $main-color;
+    }
+    &:-webkit-autofill,
+    :-webkit-autofill:hover,
+    :-webkit-autofill:focus,
+    :-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px #d9e4f5 inset;
     }
   }
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
-    border: none;
-    -webkit-text-fill-color: black;
-    -webkit-box-shadow: 0 0 0 30px #f5e3e6 inset;
-    box-shadow: 0 0 0 30px #f5e3e6 inset;
-  }
+
   button {
     @include buttonTransparent;
     font-size: 2rem;
@@ -129,39 +144,35 @@ export default {
 }
 .searchBarContainer__dropdown {
   position: relative;
-
+  border-radius: 20px;
   width: 3rem;
   height: 3rem;
-  border-radius: 50%;
-  background-color: #c0e4f5;
-  color: black;
-  z-index: 1000;
+  background-color: $main-color;
+  color: white;
+  z-index: $headerDropDown;
 
   .customSelect {
     @include flexLayout;
     position: relative;
     padding: 1rem 1.5rem;
-    height: 3rem;
-    border: 1px solid black;
-    border-radius: 10px 10px 0 0;
+    height: 100%;
+    border-radius: inherit;
     cursor: pointer;
-
     z-index: 1200;
     p {
       display: none;
-      color: black;
+      color: White;
     }
     svg {
       position: absolute;
-      left: 0.4rem;
+      left: 0.5rem;
       width: 2rem;
-      color: black;
     }
     .backdrop {
       z-index: $headerDropDown;
     }
     &:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: #4545ba;
     }
   }
   .customSelect__selectOption {
@@ -169,13 +180,15 @@ export default {
     top: 3.5rem;
     left: -5.5rem;
     width: 14rem;
-    border: 1px solid black;
+    margin-top: 1rem;
+    padding: 1rem;
+    padding-top: 0;
     border-radius: 10px;
-    background-color: #c0e4f5;
+    background-color: $main-color;
     font-size: 1.4rem;
-    font-weight: 600;
     letter-spacing: 3px;
-    z-index: $headerDropDown;
+    overflow: hidden;
+    z-index: 1700;
 
     li {
       position: relative;
@@ -190,33 +203,30 @@ export default {
         width: 70%;
         height: 0.1rem;
         transform: translate(-50%);
-
         background-color: white;
       }
       &:hover {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: #4545ba;
         font-weight: 600;
-        &::after {
-          background-color: $light-Black;
-        }
       }
     }
   }
 }
-
+.clickedDropDownStyle {
+  border-radius: 20px 20px 0 0;
+}
 @media (min-width: 768px) {
   .searchBarContainer {
     width: 28rem;
   }
   .searchBarContainer__dropdown {
     width: 10rem;
-    border-radius: 10px 10px 0 0;
 
     .customSelect {
       width: 100%;
       p {
         display: block;
-        font-weight: 600;
+
         font-size: 1.1rem;
         letter-spacing: 1px;
       }
@@ -227,23 +237,20 @@ export default {
     }
     .customSelect__selectOption {
       position: absolute;
-      top: 2.9rem;
+      top: 1.8rem;
       left: 0;
       width: 10rem;
+      border-radius: 0 0 20px 20px;
       border-top: none;
-
-      border-radius: 0 0 10px 10px;
-      background-color: #c0e4f5;
       font-size: 1.2rem;
       overflow: hidden;
       cursor: pointer;
 
-      z-index: 1200;
-
       li {
         @include mainFontBold;
         position: relative;
-        padding: 0.5rem;
+        font-weight: 400;
+        padding: 1rem;
         border-radius: 5px;
 
         &::after {
@@ -259,11 +266,7 @@ export default {
           background-color: white;
         }
         &:hover {
-          color: rgb(44, 62, 80);
-          background-color: rgba(44, 62, 80, 0.2);
-          &::after {
-            background-color: #2c3e50;
-          }
+          background-color: #4545ba;
         }
       }
     }
@@ -288,7 +291,8 @@ export default {
       }
     }
     .customSelect__selectOption {
-      width: 17rem;
+      left: 0;
+      width: 100%;
     }
   }
 

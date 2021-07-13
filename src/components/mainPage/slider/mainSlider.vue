@@ -292,9 +292,13 @@ export default {
   }
   .sliderContainer__para--hover {
     display: block;
+    padding: 0.5rem 2rem;
+    border-radius: 20px;
+    background: #141e30;
+    background: -webkit-linear-gradient(to right, #243b55, #141e30);
+    background: linear-gradient(to right, #243b55, #141e30);
+
     font-size: 8rem;
-    color: black;
-    -webkit-text-stroke: 1px white;
   }
 
   .sliderContainer__link {

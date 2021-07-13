@@ -69,9 +69,9 @@
 </template>
 <script>
 import UserConfirmation from "../../components/UserActions/userOrderConfirmation.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import useToken from "../../components/hooks/logger.js";
 
 export default {
@@ -79,7 +79,12 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const userConfirmationDialog = ref(false);
+    const route = useRoute();
+
+    const userConfirmationDialog = ref(
+      route.params.showConfirmOrderDialog || false
+    );
+
     const userCartClick = ref(false);
     const { token } = useToken();
 
@@ -110,7 +115,11 @@ export default {
     function setUserClick() {
       userCartClick.value = true;
     }
-
+    onMounted(() => {
+      if (userConfirmationDialog.value) {
+        fetchUserAddress();
+      }
+    });
     return {
       userConfirmationDialog,
       userCartClick,
@@ -167,6 +176,23 @@ export default {
   &:nth-child(odd) {
     background-color: $main-color;
     color: white;
+    .userCart__productInfomartionBox {
+      button {
+        color: white;
+      }
+      .customInputRange {
+        border: 2px solid white;
+        label {
+          color: white;
+        }
+        svg {
+          color: white;
+        }
+        input {
+          color: White;
+        }
+      }
+    }
   }
   &:last-child {
     border-bottom: 1px solid black;
@@ -175,10 +201,10 @@ export default {
 .userCart__arrowForMobile {
   position: absolute;
   top: 50%;
-  right: 4rem;
-  transform: translate(0, -50%);
+  right: 10rem;
   font-size: 4rem;
   color: $chartrouse-color;
+  z-index: 1;
   animation-name: arrowMove;
   animation-duration: 1s;
   animation-iteration-count: infinite;
@@ -188,11 +214,22 @@ export default {
   color: white;
 }
 .userCart__productInfomartionBox {
+  @include flexLayout;
+  flex-direction: column;
+  justify-content: space-evenly;
   width: 100%;
   height: 100%;
   border-left: 1px solid black;
-  justify-self: center;
-  align-self: center;
+
+  button {
+    @include buttonTransparent;
+
+    align-self: flex-end;
+    font-size: 2rem;
+  }
+  .customInputRange {
+    border: 2px solid black;
+  }
 }
 
 .userCart__productInformation {
@@ -261,6 +298,9 @@ export default {
 @media (min-width: 1024px) {
   .userCart {
     max-width: $max-width;
+  }
+  .userCart__cartContainer {
+    overflow: initial;
   }
 }
 </style>

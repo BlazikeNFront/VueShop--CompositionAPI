@@ -4,6 +4,7 @@
       <button
         @click="previousPageClick()"
         class="pagination__pageChangersButtons"
+        aria-label="previous page"
       >
         <font-awesome-icon
           :icon="['fas', 'arrow-right']"
@@ -29,6 +30,7 @@
       <button
         @click="nextPageClick($event)"
         class="pagination__pageChangersButtons"
+        aria-label="next page"
       >
         <font-awesome-icon
           :icon="['fas', 'arrow-right']"
@@ -43,11 +45,17 @@ import { ref } from "vue";
 import HexagonalShape from "./HexagonalShape.vue";
 
 export default {
-  props: ["numberOfPages", "backgroundOfHexagon", "currentPage"],
-  emits: ["pageChange", "previousPageClick", "nextPageClick"],
   components: {
     HexagonalShape,
   },
+
+  props: {
+    numberOfPages: { type: Number },
+    backgroundOfHexagon: { type: String },
+    currentPage: { type: String },
+  },
+  emits: ["pageChange", "previousPageClick", "nextPageClick"],
+
   setup(props, context) {
     const buttons = ref(null);
 
@@ -142,6 +150,66 @@ export default {
   animation-duration: 1s;
 }
 
+.paginationButtons {
+  @include flexLayout;
+  margin: 4rem auto;
+  width: 90%;
+
+  .pagination__pageChangersButtons {
+    @include button;
+    margin: 1rem;
+    padding: 1rem;
+    color: white;
+    font-size: $font-md;
+  }
+  button:hover {
+    color: #2c3e50;
+  }
+}
+.paginationButtons__hexagonButtons {
+  @include mainFontBold;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  @include flexLayout;
+  justify-content: center;
+  background-color: transparent;
+  font-size: 1.5rem;
+  color: white;
+  z-index: 1;
+}
+
+.paginationButtons__pages {
+  @include flexLayout;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.paginationButtons__hexagonShapes {
+  margin: 0 1rem;
+  transform: scale(1.4);
+  transition: all 0.5s;
+  cursor: pointer;
+  &:hover {
+    button {
+      color: #2c3e50;
+    }
+  }
+}
+.paginationButtons__previousButton {
+  transform: rotate(180deg);
+}
+.activePage {
+  color: #2c3e50;
+}
+
+.buttonClickAnimation {
+  animation-name: buttonAnimation;
+  animation-fill-mode: forwards;
+  animation-duration: 1s;
+}
+
 @keyframes buttonAnimation {
   0% {
     transform: rotateY(0turn) scale(1.4);
@@ -155,6 +223,9 @@ export default {
 @media (min-width: 768px) {
   .paginationButtons {
     width: 70%;
+  }
+  .pagination__pageChangersButtons {
+    margin: 3rem;
   }
 }
 </style>

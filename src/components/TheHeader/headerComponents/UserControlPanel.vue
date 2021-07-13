@@ -1,6 +1,10 @@
 <template>
   <div class="userControlPanel">
-    <button @click="handleUserButton" class="userControlPanel__showPanelButton">
+    <button
+      @click="handleUserButton"
+      class="userControlPanel__showPanelButton"
+      aria-label="show User  Panel"
+    >
       <font-awesome-icon
         :class="{ loggedUserIcon: token }"
         :icon="['fa', 'user']"
@@ -105,7 +109,6 @@ export default {
   @include bluesGradient;
   width: 19rem;
   height: 21rem;
-
   border: 2px solid white;
   border-radius: 15px 0 0 15px;
   flex-direction: column;
@@ -157,7 +160,6 @@ export default {
     width: 19rem;
     height: 21rem;
     transform: translate(-8rem, 0rem);
-
     overflow: hidden;
     z-index: 2000;
   }

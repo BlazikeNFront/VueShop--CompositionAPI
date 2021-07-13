@@ -14,7 +14,15 @@
 import { computed } from "vue";
 export default {
   emits: ["closeDialog"],
-  props: ["width", "height"],
+  props: {
+    width: {
+      type: String,
+    },
+    height: {
+      type: String,
+    },
+  },
+
   setup(props, context) {
     const boxDimension = computed(() => {
       return "width:" + props.width + "; height:" + props.height + ";";
@@ -31,14 +39,15 @@ export default {
   @include centerAbsolute;
   @include flexLayout;
   position: fixed;
-  width: inherit;
-  height: fit-content;
+  width: 90%;
   max-width: 135rem;
-  flex-direction: column;
+  height: fit-content;
+  min-height: 75rem;
   border: 2px solid $primiary-color;
   border-radius: 10px;
   background-color: #d9e4f5;
   background-image: linear-gradient(315deg, #d9e4f5 0%, #f5e3e6 74%);
+  flex-direction: column;
   z-index: $modal-dialog;
   overflow: hidden;
 }

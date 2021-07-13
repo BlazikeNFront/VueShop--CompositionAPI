@@ -1,14 +1,14 @@
 <template>
   <div>
     <back-drop
-      @click="selectCategoryAction"
       v-if="selectCategory"
+      @click="selectCategoryAction"
       blackOpacity="0"
     ></back-drop>
     <button
       class="customSelect"
-      :class="{ hideBorderRadius: selectCategory }"
       @click.prevent="selectCategoryAction"
+      aria-label="open possible options panel"
     >
       <p class="customSelect__selected">
         {{ selectedCategory || this.defaultCategory }}
@@ -19,16 +19,21 @@
         class="customSelect__buttonIcon"
       ></font-awesome-icon>
     </button>
-
-    <ul class="customSelect__selectOption" v-if="selectCategory">
-      <li
-        v-for="(category, index) in this.listOfCategories"
-        :key="category"
-        @click="changeSelectedCategory(category, index)"
-      >
-        {{ category }}
-      </li>
-    </ul>
+    <transition
+      name="dropDown"
+      @enter="emitCurrentDropDownState"
+      @after-leave="emitCurrentDropDownState"
+    >
+      <ul class="customSelect__selectOption" v-if="selectCategory">
+        <li
+          v-for="(category, index) in this.listOfCategories"
+          :key="category"
+          @click="changeSelectedCategory(category, index)"
+        >
+          {{ category }}
+        </li>
+      </ul>
+    </transition>
   </div>
 </template>
 <script>
@@ -44,26 +49,34 @@ export default {
       type: Object,
     },
   },
+
+  emits: ["categoryChange", "selectCategory"],
+
   setup(props, context) {
     const selectedCategory = ref(null);
     const selectCategory = ref(false);
     const indexOfSelected = ref(null);
-    const categoryChange = context.emit("categoryChange");
+
     function selectCategoryAction() {
       selectCategory.value = !selectCategory.value;
     }
+    function emitCurrentDropDownState() {
+      context.emit("selectCategory", selectCategory.value);
+    }
+
     function changeSelectedCategory(category, index) {
       selectedCategory.value = category;
       indexOfSelected.value = index;
       selectCategoryAction();
       context.emit("categoryChange", category, index);
     }
+
     return {
       selectedCategory,
       selectCategory,
       indexOfSelected,
       selectCategoryAction,
-      categoryChange,
+      emitCurrentDropDownState,
       changeSelectedCategory,
     };
   },
@@ -89,12 +102,21 @@ export default {
 .dropDown-leave-active {
   transition: all 0.2s linear;
 }
+
 .dropDown-enter-from,
 .dropDown-leave-to {
   height: 0rem;
 }
 .dropDown-enter-to,
 .dropDown-leave-from {
-  height: 12rem;
+  height: 20rem;
+}
+@media (min-width: 768px) {
+  .dropDown-enter-active {
+    transition: all 0.2s linear;
+  }
+  .dropDown-leave-active {
+    transition: all 0.2s linear;
+  }
 }
 </style>

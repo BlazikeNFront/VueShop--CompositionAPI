@@ -21,22 +21,25 @@
           ></span>
           YOUR CART
         </div>
-        <font-awesome-icon
-          :icon="['fas', 'times']"
+        <button
           class="cartContainer__XButton"
           @click="showUserCartAction"
-        ></font-awesome-icon>
+          aria-label="Close side cart bar"
+        >
+          <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon>
+        </button>
       </h4>
       <p class="cartContainer__noProdInfo" v-if="userCart.length === 0">
         There is no product in your card
       </p>
-      <div v-else class="cartContainer__cartList">
+      <aside v-else class="cartContainer__cartList">
         <ul>
-          <li v-for="product in userCart" :key="product">
+          <li v-for="product in userCart" :key="product._id">
             <div class="cartContainer__productDesc">
               <button
                 class="cartContainer__deleteProductButton"
                 @click="deleteProductFromCart(product._id)"
+                aria-label="Delete product"
               >
                 <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon>
               </button>
@@ -62,13 +65,14 @@
           </div>
           <button
             class="cartContainer__orderButton"
-            @click="handleOrderRequest"
+            aria-label="Order action"
+            @click="userCartPageLink(true)"
           >
             Order
           </button>
         </div>
-      </div>
-      <a @click.prevent="userCartPageLink">VIEW CART</a>
+      </aside>
+      <a @click.prevent="userCartPageLink(false)">VIEW CART</a>
     </section>
   </transition>
 </template>
@@ -103,20 +107,19 @@ export default {
       );
     });
     function showUserCartAction() {
-      store.dispatch("Cart/toggleCart");
+      store.dispatch("Cart/toggleCartBarView");
     }
-    function handleOrderRequest() {
-      if (token) {
-        router.push({ path: "/User/login" });
-        return;
-      }
-      router.push("/userOrder");
-    }
-    function userCartPageLink() {
+
+    function userCartPageLink(showConfirmOrderDialog = false) {
       showUserCartAction();
-      router.push({
+      const routerPayload = {
         name: "user-cart",
-      });
+      };
+
+      if (showConfirmOrderDialog && token) {
+        routerPayload.params = { showConfirmOrderDialog: true };
+      }
+      router.push(routerPayload);
     }
     function changeProductQuantityInCart(number, prodId) {
       const payload = {
@@ -134,7 +137,6 @@ export default {
       totalQuantityOfUserProducts,
       totalCartPrice,
       showUserCartAction,
-      handleOrderRequest,
       userCartPageLink,
       changeProductQuantityInCart,
       deleteProductFromCart,
@@ -145,19 +147,22 @@ export default {
 <style lang='scss'>
 .cartIconContainer {
   @include flexLayout;
-  display: none;
-  position: relative;
+  flex-direction: column;
+  position: fixed;
+  top: 15rem;
+  right: 0;
   width: 4rem;
-  height: 4rem;
+  height: 4.5rem;
+  padding: 0.2rem;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 10px 0 0 10px;
+  border-right: none;
   cursor: pointer;
-
-  @media (min-width: 425px) {
-    display: flex;
-  }
+  z-index: 1000;
 
   img {
-    width: 100%;
-    max-width: 4rem;
+    width: 2rem;
   }
 }
 .cartContainer__productDesc {
@@ -193,13 +198,11 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-
   background-color: white;
-
   flex-direction: column;
   align-items: center;
   cursor: default;
-  z-index: 1400;
+  z-index: $cartBar;
 
   @media (min-width: 425px) {
     width: 30rem;
@@ -299,32 +302,32 @@ export default {
 }
 
 .cartContainer__cartIcon {
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 .cartContainer__XButton {
+  border: none;
+  background: transparent;
   font-size: 3rem;
   cursor: pointer;
 }
 .cartContainer__totalQtn {
   @include mainFontBold;
+  display: block;
   position: relative;
-  bottom: -1.3rem;
-  left: -0.2rem;
-  width: 2rem;
-  height: 2rem;
-  font-size: $font-sm;
+  width: 100%;
+  font-size: 1.2rem;
   color: white;
-
+  text-align: center;
   z-index: 500;
 
   &::before {
     content: "";
     display: block;
     position: absolute;
-    top: -0.2rem;
-    left: -0.4rem;
-    width: 2rem;
-    height: 2rem;
+    top: -0.1rem;
+    left: 0.9rem;
+    width: 1.7rem;
+    height: 1.7rem;
     border-radius: 50%;
     background-color: red;
 
@@ -339,14 +342,51 @@ export default {
 
 .cart-enter-from,
 .cart-leave-to {
-  transform: translate(30rem, 0);
-  @media (min-width: 425px) {
-    transform: translate(45rem, 0);
-  }
+  transform: translate(38rem, 0);
 }
 .cart-enter-to,
 .cart-leave-from {
   transform: translate(0rem, 0);
+}
+
+@media (min-width: 425px) {
+  .cartIconContainer {
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 4rem;
+    height: 4rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .cartContainer__cartIcon {
+    font-size: 3rem;
+  }
+  .cartContainer__totalQtn {
+    @include mainFontBold;
+    position: absolute;
+    bottom: -0.5rem;
+    right: -1rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: $font-sm;
+    color: white;
+    z-index: 500;
+
+    &::before {
+      top: -0.2rem;
+      left: 0rem;
+      width: 2rem;
+      height: 2rem;
+      z-index: -1;
+    }
+  }
+  .cart-enter-from,
+  .cart-leave-to {
+    transform: translate(45rem, 0);
+  }
 }
 @media (min-width: 1024px) {
   .cartContainer__cartList {

@@ -23,7 +23,9 @@ import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 export default {
-  props: ["title"],
+  props: {
+    title: { type: String, required: true },
+  },
   setup(props) {
     const router = useRouter();
     const store = useStore();
@@ -97,7 +99,7 @@ export default {
   font-size: 1.5rem;
   width: 9rem;
   height: 18rem;
-  border-radius: 0 0 5px 5px;
+  border-radius: 10px;
   flex-direction: column;
   font-size: 1.5rem;
   color: white;

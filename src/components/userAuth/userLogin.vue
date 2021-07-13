@@ -3,7 +3,8 @@
     <form
       class="loginForm__form"
       @submit.prevent="handleLogin"
-      v-if="!token.value"
+      @click="clearErrors"
+      v-if="!token"
     >
       <div class="loginForm__inputs">
         <div class="loginFormControl">
@@ -37,36 +38,45 @@
         </div>
       </div>
       <button class="loginFormControl__button">Login</button>
-
+      <p v-if="serverErrorMsg" class="loginFormControl__errorMsg">
+        {{ serverErrorMsg }}
+      </p>
       <p class="signUpLink">
         U dont have an account? Click
         <span @click="this.$emit('changeView')">Here</span>
         to Sign up !
       </p>
     </form>
-
-    <modal-dialog v-if="serverErrorMsg" @closeDialog="closeErrorModal">
-      <p class="login__modalErrorMsg">{{}}</p>
-    </modal-dialog>
   </div>
 </template>
 <script>
 import { ref } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import useToken from "../hooks/logger.js";
 export default {
   emits: ["changeView"],
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const token = useToken();
-    const loginPage = ref(true);
+    const loginPage = ref(true); //true === userLogin page, false=== signUp page
+    const nameToRedirectAfterLoginAction = ref(
+      route.params.redirectAfterLogin || route.params.fromName || "main-page"
+    );
     const userName = ref(null);
     const userPassword = ref(null);
     const passwordError = ref(null);
     const userNameError = ref(null);
     const serverErrorMsg = ref(null);
+
+    function clearErrors() {
+      passwordError.value = null;
+      userNameError.value = null;
+      serverErrorMsg.value = null;
+    }
+
     async function handleLogin() {
       if (userPassword.value === null || "") {
         passwordError.value = "Please insert password";
@@ -82,17 +92,17 @@ export default {
           password: userPassword.value,
         };
         await store.dispatch("UserAuth/handleLogin", payload);
-        router.push("/");
+        router.push({ name: nameToRedirectAfterLoginAction });
       } catch (err) {
         console.log(err);
+        serverErrorMsg.value = "Couldn't log in :( Try again later";
       }
     }
+
     function changeRoute() {
       router.push({ name: "user-signUp" });
     }
-    function closeErrorModal() {
-      serverErrorMsg.value = null;
-    }
+
     return {
       token,
       loginPage,
@@ -103,7 +113,7 @@ export default {
       userNameError,
       serverErrorMsg,
       changeRoute,
-      closeErrorModal,
+      clearErrors,
     };
   },
 };

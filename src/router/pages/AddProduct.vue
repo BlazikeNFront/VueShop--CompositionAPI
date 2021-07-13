@@ -256,12 +256,14 @@
 import { ref, reactive } from "vue";
 import { useStore } from "vuex";
 import ConfirmationModal from "../../components/common/ModalDialog.vue";
+import useToken from "../../components/hooks/logger.js";
 export default {
   components: {
     ConfirmationModal,
   },
   setup() {
     const store = useStore();
+    const token = useToken();
     const addProductForm = ref(null);
     const formRequestConfirmation = reactive({ visible: false, text: null });
     const formInputs = reactive({
@@ -309,11 +311,11 @@ export default {
       }
       if (
         descritpion.value === null ||
-        descritpion.value.split(" ").length < 30
+        descritpion.value.split(" ").length < 20
       ) {
         formInputs.descritpion.error = true;
         formInputs.descritpion.errorMsg =
-          "Descritpion should contain at least 30 words";
+          "Descritpion should contain at least 20 words";
         return false;
       }
       if (price.value === null || price.value < 0) {
@@ -376,11 +378,20 @@ export default {
     }
     async function addProduct(product) {
       try {
-        const response = await fetch("http://localhost:3000/admin/addProduct", {
-          method: "POST",
-          hheaders: { "Content-Type": "application/json" },
-          body: product,
-        });
+        //since it is uploading image it cant use header hook where one  of headers is default set to JSON
+        const requestHeaders = new Headers();
+
+        if (token.value) {
+          requestHeaders.append("Authorization", `Bearer ${token.value}`);
+        }
+        const response = await fetch(
+          "https://vueshopcompback.herokuapp.com/admin/addProduct",
+          {
+            headers: requestHeaders,
+            body: product,
+            credentials: "include",
+          }
+        );
         if (response.status !== 200) {
           throw new Error("add product// status != 200");
         }
@@ -393,7 +404,7 @@ export default {
         return responseJSON.productId;
       } catch (err) {
         console.log(err);
-        store.dispatch("ErrorHandler/showError", err.message);
+        store.dispatch("ModalHandler/showModal", err.message);
       }
     }
     function cleanErrors() {

@@ -105,15 +105,17 @@ import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import useToken from "../hooks/logger.js";
+import useHeaderHook from "../hooks/createHeaders.js";
 export default {
   components: {
     AddAddressForm,
   },
+  emits: ["hideUserConfirmationDialog"],
   setup() {
     const store = useStore();
     const { token } = useToken();
     const router = useRouter();
-
+    const createHeaders = useHeaderHook();
     const showAddressForm = ref(false);
     const orderResult = reactive({
       visible: false,
@@ -129,21 +131,26 @@ export default {
       try {
         orderResult.visible = true;
         orderResult.loader = true;
-        const userToken = token.value;
+
+        const requestHeaders = createHeaders(token.value);
+
         const payload = {
           cart: store.getters["Cart/getCart"],
-          token: userToken,
         };
 
-        const rawData = await fetch("http://localhost:3000/confirmOrder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: await JSON.stringify(payload),
-        });
+        const rawData = await fetch(
+          "https://vueshopcompback.herokuapp.com/confirmOrder",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: await JSON.stringify(payload),
+            credentials: "include",
+          }
+        );
 
         if (rawData.status === 406) {
           const data = await rawData.json();
-          console.log(data);
+
           const productsUnavaliable = data.products;
           orderResult.result = false;
           orderResult.message = "One or more products are no longer avaliable";
@@ -199,23 +206,21 @@ export default {
     font-size: 1.5rem;
     font-weight: 600;
   }
+  p {
+    font-size: 1.5rem;
+  }
 }
 
 .confirmationBox__orderResultBox {
   @include basicCart;
   @include flexLayout;
   position: absolute;
-  top: 20%;
-  right: 7%;
+  margin: 10rem auto;
   padding: 2rem;
   width: 28rem;
   height: 28rem;
   flex-direction: column;
 
-  @media (min-width: 768px) {
-    left: 50%;
-    transform: translate(-50%);
-  }
   h4 {
     margin-top: 2rem;
     font-size: 2rem;
@@ -249,30 +254,26 @@ export default {
   padding: 0.5rem 1rem;
   font-weight: 600;
 }
-.orderResultBox__resultDisplay {
-  @include flexLayout;
-  width: 100%;
-  flex-direction: column;
-}
 .orderResultBox__resultInformation {
   @include flexLayout;
+  width: 100%;
 }
-.orderResultBox__unavalibleProductsBox {
+.orderResultBox__mainMessage {
+  @include flexLayout;
+}
+.orderResultBox__prodList {
+  height: 35rem;
+}
+.orderResultBox__productsUnavalible {
   @include flexLayout;
   flex-direction: column;
-  height: 9rem;
-  overflow-y: scroll;
   ul {
+    @include flexLayout;
+    flex-direction: column;
+  }
+  p {
     width: 100%;
-    li {
-      padding: 0.5rem;
-      width: 100%;
-
-      p {
-        width: 100%;
-        max-width: none;
-      }
-    }
+    max-width: 100%;
   }
 }
 .confirmationBox__pickAddressBox {
@@ -290,9 +291,7 @@ export default {
     @include button;
   }
 }
-.orderResultBox__prodList {
-  height: 35rem;
-}
+
 .confirmationBox__changeAddressButton {
   position: absolute;
   top: 0;
@@ -302,6 +301,7 @@ export default {
   @include flexLayout;
   margin: 1.5rem;
   width: 90%;
+  min-width: 20rem;
   text-align: right;
   span {
     width: 35%;
@@ -359,9 +359,6 @@ export default {
 .orderResult-leave-from {
   transform: translate(0rem);
   opacity: 1;
-  @media (min-width: 768px) {
-    transform: translate(-50%);
-  }
 }
 
 @media (min-width: 768px) {
@@ -375,8 +372,6 @@ export default {
       font-weight: 600;
     }
   }
-}
-@media (min-width: 1024px) {
 }
 </style>
 

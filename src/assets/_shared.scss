@@ -2,7 +2,7 @@
 DIVS ALWAYS HAVE CLASS
 IF SAME ELEMENTS INSIDE DIV HAVE SAME APPEARENCE , THEY ARE  STYLED USING SCSS NESTING (IN CASE ELEMENT OCCURS MORE THAN ONCE BUT STYLE ARE SAME IT IS ALSO STYLED USING NESTING - eg. <li> in lists ), OTHERWISE IT HAVE CLASS
 /////////
-SCSS MIXINS AND FUNCS ALWAYS ON TOP OF CLASS;
+SCSS MIXINS AND FUNCS ALWAYS IN TOP OF CLASS PROPERTIES;
 SCSS VARIABLES FOR CSS PROPERTIES APPEARS BY ORDER BELOW LIKE NORMAL CSS PROPERTIES;
 ////////////////
 ORDER OF PROPERTIRES IN CLASS: 
@@ -12,30 +12,32 @@ ORDER OF PROPERTIRES IN CLASS:
 4.OTHERS (z-index,aniamtions properties etc.)
 */
 
-$primiary-color: #2a2a72;
-
 //fonts
 $mainFont: "Montserrat", sans-serif;
 $secondaryFont: "Cabin", sans-serif;
+$mainInformationBoxLinkFont: "Caveat", "cursive";
 
 //sizes
 $font-bg: 2rem;
 $font-md: 1.5rem;
 $font-sm: 1.2rem;
 //colors
+$primiary-color: #2a2a72;
 $main-color: #2a2a72;
 $chartrouse-color: #20bf55;
+$orange-color: #d47304;
 $light-Black: #2c3e50;
 $light-blue: #0bd3d3;
 $red-error: #ad0000;
 
 //z-indexes
-$backdrop: 1000;
-$headerDropDown: 900;
-$addAddressDropDown: 1300;
-$modal-dialog: 1200;
-
+$backdrop: 1500;
+$headerDropDown: 1600;
+$addAddressDropDown: 1600;
+$modal-dialog: 1600;
+$cartBar: 1600;
 $max-width: 135rem;
+
 //MIXINS
 //MIXINS
 @mixin mainWidthClamp {

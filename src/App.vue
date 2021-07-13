@@ -1,9 +1,6 @@
 <template>
-  <div class="brandAdd">
-    <week-offer-box></week-offer-box>
-  </div>
   <div class="container">
-    <the-header></the-header>
+    <the-header id="header"></the-header>
     <main id="main">
       <router-view v-slot="{ Component, route }">
         <transition mode="out-in" :name="route.meta.transition || 'pageChange'">
@@ -23,7 +20,6 @@
 </template>
 
 <script>
-import WeekOfferBox from "./components/mainPage/currentOffersBox/currentOfferBox.vue";
 import TheHeader from "./components/TheHeader/TheHeader.vue";
 import FooterComponent from "./components/footer/footer.vue";
 import { computed } from "vue";
@@ -32,19 +28,19 @@ export default {
   name: "App",
   components: {
     TheHeader,
-    WeekOfferBox,
+
     FooterComponent,
   },
   setup() {
     const store = useStore();
     const userActionError = computed(() => {
-      return store.getters["ErrorHandler/getShowErrorModal"];
+      return store.getters["ModalHandler/getShowModal"];
     });
     const userActionErrorMessage = computed(() => {
-      return store.getters["ErrorHandler/getErrorModalMsg"];
+      return store.getters["ModalHandler/getModalMsg"];
     });
     function closeErrorModal() {
-      store.dispatch("ErrorHandler/closeModal");
+      store.dispatch("ModalHandler/closeModal");
     }
 
     return {
@@ -63,22 +59,6 @@ html {
   padding: 0;
   box-sizing: border-box;
   text-decoration: none;
-  ::-webkit-scrollbar-track {
-    box-shadow: none;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    background-color: #f5f5f5;
-  }
-  ::-webkit-scrollbar {
-    width: 12px;
-    background-color: none;
-  }
-  ::-webkit-scrollbar-thumb {
-    box-shadow: none;
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    background-color: #d62929;
-  }
 }
 
 *,
@@ -86,7 +66,13 @@ html {
 *:after {
   box-sizing: inherit;
 }
-
+.mainModal {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  position: fixed;
+  z-index: 3000;
+}
 body,
 h1,
 h2,
@@ -107,7 +93,10 @@ h2 {
   font-size: 4rem;
   font-weight: 800;
 }
-
+h5 {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
 ol,
 ul {
   list-style: none;
@@ -115,12 +104,8 @@ ul {
 button {
   cursor: pointer;
 }
-
-.brandAdd {
-  position: fixed;
-  top: 50%;
-  z-index: 2222;
-}
+//code below removies background color from input in chrome after autocomplete
+//code below removies background color from input in chrome after autocomplete
 
 #app {
   background-color: #d9e4f5;
@@ -135,7 +120,6 @@ button {
   position: relative;
   width: 100%;
   min-height: 100vh;
-
   overflow: hidden;
 }
 
