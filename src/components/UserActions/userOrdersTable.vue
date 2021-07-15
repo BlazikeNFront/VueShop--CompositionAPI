@@ -5,10 +5,10 @@
     </div>
     <ul class="orders__ordersList">
       <li class="order__tableDescription">
-        <h4>Order id</h4>
-        <h4>Order Details</h4>
-        <h4>Order Value</h4>
-        <h4>Status</h4>
+        <h5>Order id</h5>
+        <h5>Order Details</h5>
+        <h5>Order Value</h5>
+        <h5>Status</h5>
       </li>
 
       <li class="order__li" v-for="order in userOrders" :key="order._id">

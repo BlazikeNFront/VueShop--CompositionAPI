@@ -8,10 +8,11 @@ export default {
   },
   mutations: {
     setShowModal(state, payload) {
-      state.showErrorModal = payload;
+      state.showModal = payload;
+      console.log(state.showModal, payload);
     },
     setModalMsg(state, payload) {
-      state.errorModalMsg = payload;
+      state.modalMsg = payload;
     },
   },
   actions: {
@@ -20,6 +21,7 @@ export default {
       context.commit("setModalMsg", null);
     },
     showModal(context, payload) {
+      console.log(payload);
       context.commit("setShowModal", true);
       context.commit("setModalMsg", payload);
     },

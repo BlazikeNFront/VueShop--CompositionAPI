@@ -49,6 +49,10 @@ const router = createRouter({
       path: "/User/:view",
       component: UserAuth,
       beforeEnter(to, from, next) {
+        if (globalStore.getters["UserAuth/getToken"]) {
+          next({ name: "main-page" });
+          return;
+        }
         if (from.name) {
           to.params.fromName = from.name;
         }

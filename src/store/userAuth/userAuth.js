@@ -3,7 +3,7 @@ export default {
   state() {
     return {
       token: null,
-      admin: true,
+      admin: false,
       addresses: {
         lastUsed: null,
         all: [],
@@ -22,6 +22,7 @@ export default {
     logout(state) {
       state.token = null;
     },
+
     setUserAddress(state, payload) {
       state.addresses.all = payload; //PAYLOAD SHOULD BE AN ARRAY
     },
@@ -34,7 +35,7 @@ export default {
     },
   },
   actions: {
-    //login is made out of promises instead of async await because i want to handle login errors in userLogin component where i use async await syntax (  when async function made of others async function -- catch do not appear in higher order functions so its 'invisible' in catch block in userLogin compononet);
+    //login is made out of promises instead of async await because i want to handle login errors in userLogin component where i use async await syntax ( await need promise to work properly);
     handleLogin(context, payload) {
       const userData = {
         email: payload.userName,
@@ -49,7 +50,7 @@ export default {
         };
 
         userDataJSON().then((userDataJSON) => {
-          fetch("https://vueshopcompback.herokuapp.com/userAuth", {
+          fetch("http://localhost:3000/userAuth", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: userDataJSON,
@@ -65,7 +66,11 @@ export default {
             .then((dataJSON) => {
               const tokenPayload = dataJSON.token;
               context.commit("handleLogin", tokenPayload);
-              resolve(); //user shop cart disptaches are not essential ...
+              resolve();
+              //user cart disptaches are not essential ...
+
+              document.cookie = "tokenProvided=true;Max-Age=1800000; Secure";
+
               const localStorageUserCart = this.dispatch(
                 "Cart/fetchCartFromLocalStorage",
                 {
@@ -84,6 +89,25 @@ export default {
         });
       });
     },
+    async authUserWithCookie(context) {
+      try {
+        const response = await fetch("http://localhost:3000/authWithCookie", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        const dataJSON = await response.json();
+        const tokenPayload = dataJSON.token;
+        context.commit("handleLogin", tokenPayload);
+
+        document.cookie = "tokenProvided=true;Max-Age=1800000; Secure";
+        this.dispatch("Cart/fetchCartFromLocalStorage", {
+          root: true,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async fetchUserAddress(context) {
       try {
         const token = context.rootGetters["UserAuth/getToken"] || null;
@@ -93,13 +117,10 @@ export default {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
 
-        const rawData = await fetch(
-          "https://vueshopcompback.herokuapp.com/getUserAddresses",
-          {
-            headers: requestHeaders,
-            credentials: "include",
-          }
-        );
+        const rawData = await fetch("http://localhost:3000/getUserAddresses", {
+          headers: requestHeaders,
+          credentials: "include",
+        });
 
         if (rawData.status !== 200) {
           throw new Error("Server couldnt fetch user address");
@@ -111,17 +132,24 @@ export default {
         console.log(err);
       }
     },
+
+    setUserAddresses(context, payload) {
+      context.commit("setUserAddress", payload);
+    },
     logout(context) {
       if (context.getters["getAdminState"] === true) {
+        document.cookie = "tokenProvided=false; Secure";
         context.commit("adminLogout");
         return;
       }
+      document.cookie = "tokenProvided=false; Secure";
       context.commit("logout");
+
       this.dispatch("Cart/resetCartFron", {
         root: true,
       });
     },
-    async setLastUsedUserAddress(context, payload) {
+    async fetchLastUsedUserAddress(context, payload) {
       try {
         context.commit("setLastUsedUserAddress", payload);
         const token = context.rootGetters["UserAuth/getToken"] || null;
@@ -136,7 +164,7 @@ export default {
         };
 
         const responseFromServer = await fetch(
-          "https://vueshopcompback.herokuapp.com/updateDefaultUserAddress",
+          "http://localhost:3000/updateDefaultUserAddress",
           {
             method: "POST",
             headers: requestHeaders,
@@ -151,6 +179,9 @@ export default {
       } catch (err) {
         console.log(err);
       }
+    },
+    setLastUsedUserAddress(context, payload) {
+      context.commit("setLastUsedUserAddress", payload);
     },
   },
   getters: {

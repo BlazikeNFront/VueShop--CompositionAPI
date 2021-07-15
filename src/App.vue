@@ -22,13 +22,12 @@
 <script>
 import TheHeader from "./components/TheHeader/TheHeader.vue";
 import FooterComponent from "./components/footer/footer.vue";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 export default {
   name: "App",
   components: {
     TheHeader,
-
     FooterComponent,
   },
   setup() {
@@ -42,7 +41,14 @@ export default {
     function closeErrorModal() {
       store.dispatch("ModalHandler/closeModal");
     }
-
+    function checkForToken() {
+      if (document.cookie.split("=")[1] === "true") {
+        store.dispatch("UserAuth/authUserWithCookie");
+      }
+    }
+    onMounted(() => {
+      checkForToken();
+    });
     return {
       userActionError,
       userActionErrorMessage,

@@ -13,10 +13,10 @@
         <ul class="userCart__productList orderDetails__productList">
           <li class="userCart__product userCart__product--tableDescription">
             <span></span>
-            <h4 class="userCart__columnDescription">Product name</h4>
-            <h4 class="userCart__columnDescription">Quantity</h4>
-            <h4 class="userCart__columnDescription">Product price</h4>
-            <h4 class="userCart__columnDescription">Summary</h4>
+            <h5 class="userCart__columnDescription">Product name</h5>
+            <h5 class="userCart__columnDescription">Quantity</h5>
+            <h5 class="userCart__columnDescription">Product price</h5>
+            <h5 class="userCart__columnDescription">Summary</h5>
           </li>
           <li
             class="userCart__product"
@@ -49,15 +49,21 @@
           </li>
         </ul>
       </div>
-      <h5 class="orderDetailsView__h5">Client information</h5>
       <div class="orderDetailsView__userInformation">
-        <p class="orderDetailsView__p">Name: Damian</p>
-        <p class="orderDetailsView__p">Surname: Stachurski</p>
-        <p class="orderDetailsView__p">Adress: Panstwo Dykty i kartonu</p>
+        <h4>Client information</h4>
         <p class="orderDetailsView__p">
-          <span>Summary cost:</span> {{ summaryCost() }}$
+          <span>Name: </span>{{ order.userAddress.name }}
+        </p>
+        <p class="orderDetailsView__p">
+          <span>Surnameme: </span> {{ order.userAddress.surname }}
+        </p>
+        <p class="orderDetailsView__p">
+          <span>Address: </span> {{ order.userAddress.address }}
         </p>
       </div>
+      <p class="orderDetailsView__summaryCost">
+        <span>Summary cost:</span> {{ summaryCost() }}$
+      </p>
       <form
         v-if="changeOrderStatus"
         class="orderStatusForm"
@@ -117,7 +123,7 @@ export default {
   setup(props, context) {
     const store = useStore();
     const { token } = useToken();
-    const createHeaders = useHeaderHook();
+    const { createHeaders } = useHeaderHook();
 
     const orderDetailsStatus = ref(null);
     const orderFormError = ref(false);
@@ -134,7 +140,7 @@ export default {
       orderStatusChangedResult.value = null;
     }
     function summaryCost() {
-      const summaryCost = this.order.cart.reduce((acc, element) => {
+      const summaryCost = props.order.cart.reduce((acc, element) => {
         const sum = Number(element.price) * Number(element.quantity);
         return acc + sum;
       }, 0);
@@ -158,7 +164,7 @@ export default {
           orderStatus: orderDetailsStatus.value,
         };
         const response = await fetch(
-          `https://vueshopcompback.herokuapp.com/admin/changeOrderStatus`,
+          `http://localhost:3000/admin/changeOrderStatus`,
           {
             method: "POST",
             headers: requestHeaders,
@@ -220,7 +226,8 @@ export default {
 
 .orderDetails__listContainer {
   width: 100%;
-  max-height: 50rem;
+  height: 100%;
+  min-height: 20rem;
   position: relative;
   overflow: scroll;
 }
@@ -282,7 +289,12 @@ export default {
   font-size: 1.6rem;
   color: black;
 }
-
+.orderDetailsView__summaryCost {
+  font-size: 2rem;
+  span {
+    font-weight: 600;
+  }
+}
 .orderStatusForm__button {
   @include button;
   padding: 0.5rem 1rem;

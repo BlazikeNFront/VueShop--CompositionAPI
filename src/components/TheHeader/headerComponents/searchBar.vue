@@ -146,7 +146,7 @@ export default {
   position: relative;
   border-radius: 20px;
   width: 3rem;
-  height: 3rem;
+
   background-color: $main-color;
   color: white;
   z-index: $headerDropDown;
@@ -155,10 +155,9 @@ export default {
     @include flexLayout;
     position: relative;
     padding: 1rem 1.5rem;
-    height: 100%;
     border-radius: inherit;
     cursor: pointer;
-    z-index: 1200;
+    z-index: 1750;
     p {
       display: none;
       color: White;
@@ -226,7 +225,6 @@ export default {
       width: 100%;
       p {
         display: block;
-
         font-size: 1.1rem;
         letter-spacing: 1px;
       }
@@ -237,7 +235,8 @@ export default {
     }
     .customSelect__selectOption {
       position: absolute;
-      top: 1.8rem;
+      padding-top: 0.5rem;
+      top: 2rem;
       left: 0;
       width: 10rem;
       border-radius: 0 0 20px 20px;

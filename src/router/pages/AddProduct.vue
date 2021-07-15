@@ -384,14 +384,11 @@ export default {
         if (token.value) {
           requestHeaders.append("Authorization", `Bearer ${token.value}`);
         }
-        const response = await fetch(
-          "https://vueshopcompback.herokuapp.com/admin/addProduct",
-          {
-            headers: requestHeaders,
-            body: product,
-            credentials: "include",
-          }
-        );
+        const response = await fetch("http://localhost:3000/admin/addProduct", {
+          headers: requestHeaders,
+          body: product,
+          credentials: "include",
+        });
         if (response.status !== 200) {
           throw new Error("add product// status != 200");
         }

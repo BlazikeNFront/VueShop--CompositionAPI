@@ -35,15 +35,14 @@ export default {
         context.commit("setQuery", query);
 
         const rawData = await fetch(
-          `https://vueshopcompback.herokuapp.com/searchProducts/${query}?page=${page ||
-            1}`
+          `http://localhost:3000/searchProducts/${query}?page=${page || 1}`
         );
         const payload = await rawData.json();
         if (rawData.status !== 200) {
           throw new Error("Server side error");
         }
         const getNumberOfPages = Math.ceil(payload.totalItems / 8);
-
+        console.log(payload);
         context.commit("setSearchResult", payload.data);
         context.commit("setNumberOfPages", getNumberOfPages);
       } catch (err) {
@@ -53,7 +52,7 @@ export default {
     async handlePageChange(context, page) {
       try {
         const rawData = await fetch(
-          `https://vueshopcompback.herokuapp.com/searchProducts/${context.getters.getQuery}?page=${page}`
+          `http://localhost:3000/searchProducts/${context.getters.getQuery}?page=${page}`
         );
         const payload = await rawData.json();
 
@@ -70,10 +69,10 @@ export default {
     async setProductDetails(context, prodId) {
       try {
         const rawData = await fetch(
-          `https://vueshopcompback.herokuapp.com/getProductDetails/${prodId}`
+          `http://localhost:3000/getProductDetails/${prodId}`
         );
         const data = await rawData.json();
-        data.description = data.description.split("•").join("\n•"); // sometime in description appears list starting with "•" sign;this code makes the sign to start in new line(looks like acutallu list after that adjustment)
+        data.description = data.description.split("•").join("\n•"); // sometimes in description appears list starting with "•" sign;this code makes the sign to start in new line(looks like acutallu list after that adjustment)
         context.commit("setProductDetails", data);
       } catch (err) {
         console.log(err);

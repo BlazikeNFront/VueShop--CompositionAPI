@@ -120,14 +120,11 @@ export default {
           password: userPassword.value,
         };
         const requestHeaders = createHeaders();
-        const data = await fetch(
-          "https://vueshopcompback.herokuapp.com/SignUp",
-          {
-            method: "POST",
-            headers: requestHeaders,
-            body: await JSON.stringify(userData),
-          }
-        );
+        const data = await fetch("http://localhost:3000/SignUp", {
+          method: "POST",
+          headers: requestHeaders,
+          body: await JSON.stringify(userData),
+        });
         const dataJSON = await data.json();
 
         if (data.status !== 200) {

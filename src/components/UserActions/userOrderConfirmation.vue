@@ -115,7 +115,7 @@ export default {
     const store = useStore();
     const { token } = useToken();
     const router = useRouter();
-    const createHeaders = useHeaderHook();
+    const { createHeaders } = useHeaderHook();
     const showAddressForm = ref(false);
     const orderResult = reactive({
       visible: false,
@@ -136,17 +136,19 @@ export default {
 
         const payload = {
           cart: store.getters["Cart/getCart"],
+          userAddress: {
+            name: lastUsedAddress.value.name,
+            surname: lastUsedAddress.value.surname,
+            address: lastUsedAddress.value.address,
+          },
         };
 
-        const rawData = await fetch(
-          "https://vueshopcompback.herokuapp.com/confirmOrder",
-          {
-            method: "POST",
-            headers: requestHeaders,
-            body: await JSON.stringify(payload),
-            credentials: "include",
-          }
-        );
+        const rawData = await fetch("http://localhost:3000/confirmOrder", {
+          method: "POST",
+          headers: requestHeaders,
+          body: await JSON.stringify(payload),
+          credentials: "include",
+        });
 
         if (rawData.status === 406) {
           const data = await rawData.json();

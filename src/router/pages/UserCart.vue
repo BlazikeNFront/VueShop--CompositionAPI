@@ -33,9 +33,18 @@
                 </p>
               </div>
               <div class="userCart__productInfomartionBox">
-                <p class="userCart__productInformation">
-                  {{ product.quantity }}
-                </p>
+                <button @click="deleteProductFromCart(product._id)">
+                  <font-awesome-icon
+                    :icon="['fas', 'times']"
+                  ></font-awesome-icon>
+                </button>
+                <input-number
+                  class="userCart__inputNumber"
+                  :initialNumber="product.quantity"
+                  @valueChange="
+                    changeProductQuantityInCart($event, product._id)
+                  "
+                ></input-number>
               </div>
               <div class="userCart__productInfomartionBox">
                 <p class="userCart__productInformation">
@@ -69,13 +78,14 @@
 </template>
 <script>
 import UserConfirmation from "../../components/UserActions/userOrderConfirmation.vue";
+import InputNumber from "../../components/common/InputNumber.vue";
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import useToken from "../../components/hooks/logger.js";
 
 export default {
-  components: { UserConfirmation },
+  components: { UserConfirmation, InputNumber },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -98,6 +108,16 @@ export default {
       }, 0);
       return summaryCost.toFixed(2);
     });
+    function deleteProductFromCart(prodId) {
+      store.dispatch("Cart/deleteItemFromCart", prodId);
+    }
+    function changeProductQuantityInCart(number, prodId) {
+      const payload = {
+        newQuantity: number,
+        prodId,
+      };
+      store.dispatch("Cart/updateProductQuantityInCart", payload);
+    }
     function showUserConfimationDialog() {
       if (!token.value) {
         router.push({ name: "user-login", params: { view: "login" } });
@@ -126,6 +146,8 @@ export default {
       token,
       userCart,
       summaryCost,
+      deleteProductFromCart,
+      changeProductQuantityInCart,
       showUserConfimationDialog,
       hideUserConfirmationDialog,
       setUserClick,

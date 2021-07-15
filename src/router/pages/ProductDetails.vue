@@ -4,7 +4,7 @@
     <div class="productDetails_productBox" v-else>
       <img
         :src="product.imagePath.large"
-        alt="rod"
+        :alt="product.name + 'image'"
         class="productDetails__image"
       />
 
@@ -88,14 +88,12 @@ export default {
   margin: 2rem auto;
   padding-bottom: 3rem;
   width: 100%;
-
   flex-direction: column;
   background-color: white;
   font-size: $font-md;
   color: black;
   img {
     width: 100%;
-    //72rem on desktop
   }
 }
 

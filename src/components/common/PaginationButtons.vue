@@ -70,7 +70,7 @@ export default {
       context.emit("previousPageClick");
     }
     function pageClick(e, page) {
-      const element = e.path[1];
+      const element = e.target.offsetParent;
       element.classList.remove("buttonClickAnimation");
       void element.offsetWidth; //force reflow
       element.classList.add("buttonClickAnimation");

@@ -51,16 +51,18 @@
         class="confirmationForm__formControl"
         :class="{ newAddressError: newAddressForm.address.error }"
       >
-        <label for="Addres">Address: </label
+        <label for="address">Address: </label
         ><input
-          id="Name"
-          name="name"
+          id="address"
+          name="address"
           type="text"
-          placeholder="Name"
+          placeholder="Address"
           v-model.trim="newAddressForm.address.value"
         />
       </div>
-      <p v-if="formErrorMsg">{{ formErrorMsg }}</p>
+      <p class="confirmationBox__FormErrorMsg" v-if="formErrorMsg">
+        {{ formErrorMsg }}
+      </p>
       <button
         type="submit"
         class="confirmationForm__button"
@@ -88,7 +90,7 @@ export default {
   setup(props, context) {
     const store = useStore();
     const { token } = useToken();
-    const createHeaders = useHeaderHook();
+    const { createHeaders } = useHeaderHook();
 
     const newAddressForm = reactive({
       name: { value: "", error: false },
@@ -134,7 +136,8 @@ export default {
     }
     function formValidation() {
       const { name, surname, address } = newAddressForm;
-
+      clearFormError();
+      addressUpdateResult.value = null;
       const regexOnlyLetters = /^[A-Za-z'/s]+$/;
       const regexForAddress = /^[\sA-Za-z0-9-']+$/;
 
@@ -172,7 +175,7 @@ export default {
           return;
         }
         formLoader.value = true;
-
+        addressUpdateResult.value = null;
         const payload = {
           name: newAddressForm.name.value,
           surname: newAddressForm.surname.value,
@@ -181,15 +184,12 @@ export default {
 
         const requestHeaders = createHeaders(token.value);
 
-        const postResult = await fetch(
-          "https://vueshopcompback.herokuapp.com/addUserAddress",
-          {
-            method: "POST",
-            headers: requestHeaders,
-            body: await JSON.stringify(payload),
-            credentials: "include",
-          }
-        );
+        const postResult = await fetch("http://localhost:3000/addUserAddress", {
+          method: "POST",
+          headers: requestHeaders,
+          body: await JSON.stringify(payload),
+          credentials: "include",
+        });
         if (postResult.status !== 200) {
           formLoader.value = false;
           throw new Error("Server did not accepted address");
@@ -289,7 +289,6 @@ export default {
       font-size: 1.2rem;
       font-weight: 600;
       color: white;
-
       text-align: center;
     }
   }
@@ -311,8 +310,11 @@ export default {
 
     li {
       padding: 1rem;
+      font-size: 1.3rem;
       &:hover {
         background-color: rgba(255, 255, 255, 0.2);
+
+        font-size: 1.4rem;
       }
     }
   }

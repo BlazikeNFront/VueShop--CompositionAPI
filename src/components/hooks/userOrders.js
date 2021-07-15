@@ -66,7 +66,7 @@ export default function useUserOrders() {
       }
 
       const rawData = await fetch(
-        `https://vueshopcompback.herokuapp.com/getUserOrders?page=${page}`,
+        `http://localhost:3000/getUserOrders?page=${page}`,
         {
           headers: requestHeaders,
           credentials: "include",
@@ -97,7 +97,7 @@ export default function useUserOrders() {
         requestHeaders.append("Authorization", `Bearer ${token.value}`);
       }
       const rawData = await fetch(
-        `https://vueshopcompback.herokuapp.com/admin/getOrders?page=${page}`,
+        `http://localhost:3000/admin/getOrders?page=${page}`,
         {
           headers: requestHeaders,
           credentials: "include",

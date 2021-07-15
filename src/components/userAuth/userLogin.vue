@@ -60,11 +60,13 @@ export default {
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
-    const token = useToken();
+    const { token } = useToken();
+
     const loginPage = ref(true); //true === userLogin page, false=== signUp page
     const nameToRedirectAfterLoginAction = ref(
-      route.params.redirectAfterLogin || route.params.fromName || "main-page"
+      route.params.redirectAfterLogin || "main-page"
     );
+
     const userName = ref(null);
     const userPassword = ref(null);
     const passwordError = ref(null);
@@ -92,7 +94,7 @@ export default {
           password: userPassword.value,
         };
         await store.dispatch("UserAuth/handleLogin", payload);
-        router.push({ name: nameToRedirectAfterLoginAction });
+        router.push({ name: nameToRedirectAfterLoginAction.value });
       } catch (err) {
         console.log(err);
         serverErrorMsg.value = "Couldn't log in :( Try again later";
