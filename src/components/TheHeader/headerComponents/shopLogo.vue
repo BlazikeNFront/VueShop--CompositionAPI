@@ -2,12 +2,12 @@
   <div class="header__logo" @click="redirectToMainPage">
     <img
       class="header__fishImg"
-      src="../../../assets/companyFishIcon.png"
+      src="../../../assets/img/companyFishIcon.png"
       alt="Taimen Company Logo"
     />
     <img
       class="header__textImg"
-      src="../../../assets/companyTextLogo.png"
+      src="../../../assets/img/companyTextLogo.png"
       alt="Taimen Company Logo"
     />
   </div>

@@ -256,15 +256,16 @@ export default {
   padding: 0.5rem 1rem;
   font-weight: 600;
 }
-.orderResultBox__resultInformation {
+.orderResultBox__resultDisplay {
   @include flexLayout;
   width: 100%;
-}
-.orderResultBox__mainMessage {
-  @include flexLayout;
+  flex-direction: column;
 }
 .orderResultBox__prodList {
   height: 35rem;
+}
+.orderResultBox__mainMessage {
+  @include flexLayout;
 }
 .orderResultBox__productsUnavalible {
   @include flexLayout;

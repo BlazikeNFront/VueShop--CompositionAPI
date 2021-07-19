@@ -189,10 +189,8 @@ export default {
   grid-gap: 0;
   border: 1px solid black;
   border-bottom: none;
-
   background-color: white;
   font-size: $font-md;
-
   color: black;
 
   &:nth-child(odd) {

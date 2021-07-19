@@ -6,7 +6,7 @@
         <p class="sliderContainer__para sliderContainer__para--normal">RODS</p>
         <img
           class="sliderItem_visible"
-          src="../../../assets/rodCategoryImage.jpg"
+          src="../../../assets/img/rodCategoryImage.jpg"
           alt="picture of fishing rod"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">RODS</p>
@@ -22,7 +22,7 @@
         </div>
         <img
           class="sliderItem1"
-          src="../../../assets/reelsCategoryImage.jpg"
+          src="../../../assets/img/reelsCategoryImage.jpg"
           alt="picture of fishing reel"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">REELS</p>
@@ -38,7 +38,7 @@
         </div>
         <img
           class="sliderItem1"
-          src="../../../assets/luresCategoryImage.jpg"
+          src="../../../assets/img/luresCategoryImage.jpg"
           alt="picture of fishing reel"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">LURES</p>
@@ -54,7 +54,7 @@
         </div>
         <img
           class="sliderItem1"
-          src="../../../assets/lineCategoryImage.jpg"
+          src="../../../assets/img/lineCategoryImage.jpg"
           alt="picture of fishing reel"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">LINES</p>
@@ -119,7 +119,7 @@ export default {
 </script>
 <style lang='scss'>
 .sliderContainer {
-  width: 100%;
+  width: 95%;
   height: 100%;
   font-family: $secondaryFont;
 
@@ -155,7 +155,7 @@ export default {
     height: inherit;
     background-color: black;
     overflow: hidden;
-    cursor: pointer;
+
     transition: all 1s ease;
 
     img {

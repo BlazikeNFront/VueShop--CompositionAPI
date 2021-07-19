@@ -73,14 +73,14 @@ export default {
   margin: 0 auto;
   width: 29rem;
   height: 12rem;
-  background-image: url("../../assets/companyTextLogo.png");
+  background-image: url("../../assets/img/companyTextLogo.png");
   background-size: cover;
 }
 .userAuth__companyLogoIcon {
   margin: 0 auto;
   width: 23rem;
   height: 14rem;
-  background-image: url("../../assets/companyFishIcon.png");
+  background-image: url("../../assets/img/companyFishIcon.png");
   background-size: cover;
   transform: scaleX(1);
   transition: all 2s;

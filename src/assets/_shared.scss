@@ -1,6 +1,4 @@
-/* LOGIC BEHIND STYLES
-DIVS ALWAYS HAVE CLASS
-IF SAME ELEMENTS INSIDE DIV HAVE SAME APPEARENCE , THEY ARE  STYLED USING SCSS NESTING (IN CASE ELEMENT OCCURS MORE THAN ONCE BUT STYLE ARE SAME IT IS ALSO STYLED USING NESTING - eg. <li> in lists ), OTHERWISE IT HAVE CLASS
+/*
 /////////
 SCSS MIXINS AND FUNCS ALWAYS IN TOP OF CLASS PROPERTIES;
 SCSS VARIABLES FOR CSS PROPERTIES APPEARS BY ORDER BELOW LIKE NORMAL CSS PROPERTIES;
@@ -17,31 +15,10 @@ $mainFont: "Montserrat", sans-serif;
 $secondaryFont: "Cabin", sans-serif;
 $mainInformationBoxLinkFont: "Caveat", "cursive";
 
-//font sizes
+//sizes
 $font-bg: 2rem;
 $font-md: 1.5rem;
 $font-sm: 1.2rem;
-h1 {
-  font-size: 5rem;
-  font-weight: 600;
-}
-h2 {
-  font-size: 4rem;
-  font-weight: 600;
-}
-h3 {
-  font-size: 3.5rem;
-  font-weight: 600;
-}
-h4 {
-  font-size: 2rem;
-  font-weight: 600;
-}
-h5 {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
 //colors
 $primiary-color: #2a2a72;
 $main-color: #2a2a72;
@@ -52,7 +29,7 @@ $light-blue: #0bd3d3;
 $red-error: #ad0000;
 
 //z-indexes
-$backdrop: 1600;
+$backdrop: 1500;
 $headerDropDown: 1600;
 $addAddressDropDown: 1600;
 $modal-dialog: 1600;

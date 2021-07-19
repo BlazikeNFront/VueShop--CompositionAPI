@@ -2,11 +2,11 @@
   <div>
     <form
       ref="addProductForm"
-      class="form-addProduct"
+      class="addProduct__form"
       @submit.prevent="handleFormRequest"
       @click="cleanErrors"
     >
-      <h4 class="form-addProduct__h4">Add product to store:</h4>
+      <h4 class="addProduct__h4">Add product to store:</h4>
       <div class="addProduct__formControl">
         <div class="addProduct__formControl__inputBox">
           <p class="form-addProduct__para">Select type of product:</p>
@@ -240,15 +240,16 @@
           {{ formInputs.image.error.errorMsg }}
         </p>
       </div>
-      <button class="form-addProduct__button">Create product</button>
+      <div class="addProduct__submitContainer">
+        <button>Create product</button>
+        <loader v-if="loader" class="addProduct__loader"></loader>
+      </div>
     </form>
     <confirmation-modal
       v-if="formRequestConfirmation.visible"
       @closeDialog="closeModal"
     >
-      <h4 class="addProduct__errorMsg__moddalText">
-        {{ formRequestConfirmation.text }}
-      </h4>
+      <p class="addProduct__modalText">{{ formRequestConfirmation.text }}</p>
     </confirmation-modal>
   </div>
 </template>
@@ -257,13 +258,16 @@ import { ref, reactive } from "vue";
 import { useStore } from "vuex";
 import ConfirmationModal from "../../components/common/ModalDialog.vue";
 import useToken from "../../components/hooks/logger.js";
+import Loader from "../../components/common/loader.vue";
 export default {
   components: {
     ConfirmationModal,
+    Loader,
   },
   setup() {
     const store = useStore();
-    const token = useToken();
+    const { token } = useToken();
+    const loader = ref(false);
     const addProductForm = ref(null);
     const formRequestConfirmation = reactive({ visible: false, text: null });
     const formInputs = reactive({
@@ -275,6 +279,7 @@ export default {
       quantity: { value: null, error: false, errorMsg: null },
       image: { value: null, error: false, errorMsg: null },
     });
+
     function closeModal() {
       formRequestConfirmation.visible = false;
       formRequestConfirmation.text = null;
@@ -361,23 +366,14 @@ export default {
       product.append("price", price.value);
       product.append("quantity", quantity.value);
       product.append("image", image.value);
-
+      console.log(product);
       if (formValidation === true) {
-        const productId = await addProduct(product);
-
-        if (!productId) {
-          formRequestConfirmation.text =
-            "Server couldnt add product :( Try again";
-          formRequestConfirmation.visible = true;
-          throw new Error("no product iD in VUE PAGE");
-        }
-        formRequestConfirmation.text = "Added product succesfully";
-        formRequestConfirmation.visible = true;
-        cleanForm();
+        addProduct(product);
       }
     }
     async function addProduct(product) {
       try {
+        loader.value = true;
         //since it is uploading image it cant use header hook where one  of headers is default set to JSON
         const requestHeaders = new Headers();
 
@@ -385,23 +381,26 @@ export default {
           requestHeaders.append("Authorization", `Bearer ${token.value}`);
         }
         const response = await fetch("http://localhost:3000/admin/addProduct", {
+          method: "POST",
           headers: requestHeaders,
           body: product,
           credentials: "include",
         });
         if (response.status !== 200) {
-          throw new Error("add product// status != 200");
+          throw new Error();
         }
-        const responseJSON = await response.json();
-        if (!responseJSON.productId) {
-          throw new Error(
-            "add prooduct action // backend did not send productId"
-          );
-        }
-        return responseJSON.productId;
+
+        formRequestConfirmation.visible = true;
+        formRequestConfirmation.text = "Product added successfully";
+        cleanForm();
+        loader.value = false;
       } catch (err) {
+        loader.value = false;
         console.log(err);
-        store.dispatch("ModalHandler/showModal", err.message);
+        store.dispatch(
+          "ModalHandler/showModal",
+          "Server did not accept product"
+        );
       }
     }
     function cleanErrors() {
@@ -427,12 +426,13 @@ export default {
       cleanErrors,
       cleanForm,
       addProductForm,
+      loader,
     };
   },
 };
 </script>
 <style lang='scss'>
-.form-addProduct {
+.addProduct__form {
   @include basicCart;
   @include flexLayout;
   margin: 3rem auto;
@@ -474,7 +474,7 @@ export default {
 .addProduct__formControl__lables {
   margin-right: 1rem;
 }
-.form-addProduct__h4 {
+.addProduct__h4 {
   margin-top: 4rem;
   font-size: $font-bg;
 }
@@ -497,16 +497,30 @@ export default {
 .addProduct__errorMsg {
   position: absolute;
   bottom: 0;
-
   width: 150%;
   font-size: $font-sm;
   color: red;
 }
-.addProduct__errorMsg__moddalText {
+.addProduct__modalText {
   font-size: $font-bg;
   color: $primiary-color;
 }
-
+.addProduct__submitContainer {
+  @include flexLayout;
+  position: relative;
+  button {
+    @include button;
+    padding: 0.5rem 1rem;
+    font-size: 2rem;
+    font-weight: 600;
+    color: white;
+  }
+}
+.addProduct__loader {
+  position: absolute;
+  right: -8rem;
+  transform: scale(0.7);
+}
 @media (min-width: 768px) {
   .addProduct__formControl {
     flex-direction: row;

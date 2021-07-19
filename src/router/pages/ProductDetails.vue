@@ -56,7 +56,6 @@ export default {
     });
 
     function changeQuantity(number) {
-      console.log(quantity.value);
       quantity.value = number;
     }
     function addToCart() {
@@ -88,12 +87,14 @@ export default {
   margin: 2rem auto;
   padding-bottom: 3rem;
   width: 100%;
+
   flex-direction: column;
   background-color: white;
   font-size: $font-md;
   color: black;
   img {
     width: 100%;
+    //72rem on desktop
   }
 }
 

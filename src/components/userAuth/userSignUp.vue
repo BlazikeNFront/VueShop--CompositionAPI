@@ -216,9 +216,11 @@ export default {
 .loginFormControl__button--signUp {
   margin-top: 2rem;
 }
-.signUpForm__errorMsg {
-  color: $red-error;
-  font-size: $font-bg;
+.signUpForm__modal {
+  p {
+    color: $red-error;
+    font-size: $font-bg;
+  }
 }
 .userInputError {
   border: 2px solid $red-error;

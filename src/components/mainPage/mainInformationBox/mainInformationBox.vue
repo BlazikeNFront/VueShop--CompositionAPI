@@ -2,7 +2,7 @@
   <section class="containerForMainImg">
     <div class="containerForMainImg__InfoDisplay">
       <div class="containerForMainImg__text">
-        <img src="../../../assets/savagearLogo.png" alt="savagear logo" />
+        <img src="../../../assets/img/savagearLogo.png" alt="savagear logo" />
 
         <p>
           Lorem Ipsum is simply dummy text of the printing and typesetting
@@ -35,8 +35,7 @@ export default {
   position: relative;
   width: 100%;
   height: 80rem;
-  background-image: url("../../../assets/mainInformationBackgroundWebp.webp");
-  background-attachment: fixed;
+  background-image: url("../../../assets/img/mainInformationBackgroundWebp.webp");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -56,7 +55,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   background-color: rgba(0, 0, 0, 1);
-  background-image: url("../../../assets/mainInformationBoxPicure.jpg");
+  background-image: url("../../../assets/img/mainInformationBoxPicure.jpg");
   background-position-y: 7rem;
   background-size: contain;
   background-repeat: no-repeat;
@@ -112,11 +111,14 @@ export default {
   }
 }
 @media (min-width: 1024px) {
+  .containerForMainImg {
+    background-attachment: fixed;
+  }
   .containerForMainImg__text {
     height: 90%;
     background-position-y: -12rem;
     p {
-      margin-top: 39rem;
+      margin-top: 42rem;
     }
   }
 }

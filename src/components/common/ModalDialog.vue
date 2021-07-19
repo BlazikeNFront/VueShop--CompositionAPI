@@ -41,8 +41,7 @@ export default {
   position: fixed;
   width: 90%;
   max-width: 135rem;
-  height: fit-content;
-  min-height: 75rem;
+  height: clamp(50rem, 80%, 80rem);
   border: 2px solid $primiary-color;
   border-radius: 10px;
   background-color: #d9e4f5;

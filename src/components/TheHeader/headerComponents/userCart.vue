@@ -116,7 +116,7 @@ export default {
         name: "user-cart",
       };
 
-      if (showConfirmOrderDialog && token) {
+      if (showConfirmOrderDialog && token.value) {
         routerPayload.params = { showConfirmOrderDialog: true };
       }
       router.push(routerPayload);
@@ -290,7 +290,7 @@ export default {
 .cartContainer__cartList {
   ul {
     height: 54vh;
-    margin-top: 5rem;
+    margin-top: 2rem;
     overflow-y: scroll;
   }
   li {
@@ -386,6 +386,13 @@ export default {
   .cart-enter-from,
   .cart-leave-to {
     transform: translate(45rem, 0);
+  }
+}
+@media (min-width: 725px) {
+  .cartContainer__cartList {
+    ul {
+      margin-top: 5rem;
+    }
   }
 }
 @media (min-width: 1024px) {

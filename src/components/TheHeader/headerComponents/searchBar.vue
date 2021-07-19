@@ -3,8 +3,8 @@
     <form>
       <drop-down
         class="searchBarContainer__dropdown"
-        defaultCategory="Search In"
         :class="{ clickedDropDownStyle: dropDownVisibility }"
+        defaultCategory="Search In"
         :listOfCategories="['Rods', 'Reels', 'Lures', 'Lines', 'Any']"
         @categoryChange="addCategoryToSearchQuery"
         @selectCategory="setDropDownStyles"
@@ -146,18 +146,18 @@ export default {
   position: relative;
   border-radius: 20px;
   width: 3rem;
-
+  height: 3rem;
   background-color: $main-color;
   color: white;
-  z-index: $headerDropDown;
 
   .customSelect {
     @include flexLayout;
     position: relative;
     padding: 1rem 1.5rem;
+    height: 100%;
     border-radius: inherit;
     cursor: pointer;
-    z-index: 1750;
+    z-index: 1200;
     p {
       display: none;
       color: White;
@@ -225,6 +225,7 @@ export default {
       width: 100%;
       p {
         display: block;
+
         font-size: 1.1rem;
         letter-spacing: 1px;
       }
@@ -235,8 +236,7 @@ export default {
     }
     .customSelect__selectOption {
       position: absolute;
-      padding-top: 0.5rem;
-      top: 2rem;
+      top: 1.8rem;
       left: 0;
       width: 10rem;
       border-radius: 0 0 20px 20px;

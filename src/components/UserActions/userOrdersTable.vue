@@ -11,7 +11,7 @@
         <h5>Status</h5>
       </li>
 
-      <li class="order__li" v-for="order in userOrders" :key="order._id">
+      <li class="userOrder__li" v-for="order in userOrders" :key="order._id">
         <div class="userOrder__productInfomartionBox">
           <p class="userOrder__productInformation">
             {{ order._id }}
@@ -124,8 +124,7 @@ export default {
 .orders__container {
   position: relative;
   margin-left: 5%;
-
-  height: 50rem;
+  max-height: 50rem;
   overflow-x: scroll;
 }
 .orders__ordersList {
@@ -135,7 +134,7 @@ export default {
   border-radius: 10px;
   background-color: White;
 }
-.order__li {
+.userOrder__li {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 2fr;
   grid-gap: 0;

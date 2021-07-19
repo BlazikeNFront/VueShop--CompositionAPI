@@ -99,64 +99,6 @@ export default {
 
   .pagination__pageChangersButtons {
     @include button;
-    margin: 3rem;
-    padding: 1rem;
-    color: white;
-    font-size: $font-md;
-  }
-  button:hover {
-    color: #2c3e50;
-  }
-}
-.paginationButtons__hexagonButtons {
-  @include mainFontBold;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  color: white;
-  font-size: 1.5rem;
-  background-color: transparent;
-  border: none;
-  outline: none;
-  z-index: 1;
-}
-
-.paginationButtons__pages {
-  @include flexLayout;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.paginationButtons__hexagonShapes {
-  margin: 0 1rem;
-  transform: scale(1.4);
-  transition: all 0.5s;
-  cursor: pointer;
-  &:hover {
-    button {
-      color: #2c3e50;
-    }
-  }
-}
-.paginationButtons__previousButton {
-  transform: rotate(180deg);
-}
-.activePage {
-  color: #2c3e50;
-}
-
-.buttonClickAnimation {
-  animation-name: buttonAnimation;
-  animation-fill-mode: forwards;
-  animation-duration: 1s;
-}
-
-.paginationButtons {
-  @include flexLayout;
-  margin: 4rem auto;
-  width: 90%;
-
-  .pagination__pageChangersButtons {
-    @include button;
     margin: 1rem;
     padding: 1rem;
     color: white;

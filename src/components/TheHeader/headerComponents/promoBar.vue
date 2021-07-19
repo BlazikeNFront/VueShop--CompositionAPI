@@ -36,7 +36,9 @@
 
   height: 3rem;
   h3 {
-    width: 100%;
+    position: relative;
+    left: 53%;
+    transform: translate(-50%);
     font-size: 2rem;
     font-weight: 600;
     letter-spacing: 2rem;

@@ -98,7 +98,7 @@ export default {
 }
 .userControlPanel__panelContainer {
   position: absolute;
-  right: -6%;
+  right: 0;
   width: 19rem;
   height: 21rem;
   overflow: hidden;
@@ -151,6 +151,21 @@ export default {
 .user-panel-enter-to,
 .user-panel-leave-from {
   transform: translate(0rem);
+}
+@media (min-width: 345px) {
+  .userControlPanel__panelContainer {
+    right: -3%;
+  }
+}
+@media (min-width: 365px) {
+  .userControlPanel__panelContainer {
+    right: -4%;
+  }
+}
+@media (min-width: 375px) {
+  .userControlPanel__panelContainer {
+    right: -6%;
+  }
 }
 @media (min-width: 768px) {
   .userControlPanel__panelContainer {

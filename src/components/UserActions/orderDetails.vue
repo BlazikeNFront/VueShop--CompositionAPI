@@ -1,10 +1,6 @@
 <template>
   <div class="orderDetailsView">
-    <modal-dialog
-      @closeDialog="this.$emit('closeModal')"
-      width="95%"
-      height="fit-content"
-    >
+    <modal-dialog @closeDialog="this.$emit('closeModal')">
       <h4 class="orderDetailsView__h4">Order Details for: {{ order._id }}</h4>
       <div class="orderDetails__listContainer" @scroll="setUserOrderClick">
         <div class="userCart__arrowForMobile" v-if="!userOrderClick">

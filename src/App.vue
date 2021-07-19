@@ -9,12 +9,9 @@
       </router-view>
     </main>
     <footer-component></footer-component>
-    <modal-dialog
-      v-if="this.userActionError"
-      @closeDialog="this.closeErrorModal"
-    >
+    <modal-dialog v-if="this.userActionModal" @closeDialog="this.closeModal">
       <h4 class="errorDialog_h4">Error occured :(</h4>
-      <p class="errorDialog_p">{{ this.userActionErrorMessage }}</p>
+      <p class="errorDialog_p">{{ this.userActionModalMsg }}</p>
     </modal-dialog>
   </div>
 </template>
@@ -32,13 +29,13 @@ export default {
   },
   setup() {
     const store = useStore();
-    const userActionError = computed(() => {
+    const userActionModal = computed(() => {
       return store.getters["ModalHandler/getShowModal"];
     });
-    const userActionErrorMessage = computed(() => {
+    const userActionModalMsg = computed(() => {
       return store.getters["ModalHandler/getModalMsg"];
     });
-    function closeErrorModal() {
+    function closeModal() {
       store.dispatch("ModalHandler/closeModal");
     }
     function checkForToken() {
@@ -50,9 +47,9 @@ export default {
       checkForToken();
     });
     return {
-      userActionError,
-      userActionErrorMessage,
-      closeErrorModal,
+      userActionModal,
+      userActionModalMsg,
+      closeModal,
     };
   },
 };
@@ -72,13 +69,7 @@ html {
 *:after {
   box-sizing: inherit;
 }
-.mainModal {
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  position: fixed;
-  z-index: 3000;
-}
+
 body,
 h1,
 h2,
@@ -110,8 +101,6 @@ ul {
 button {
   cursor: pointer;
 }
-//code below removies background color from input in chrome after autocomplete
-//code below removies background color from input in chrome after autocomplete
 
 #app {
   background-color: #d9e4f5;
@@ -137,7 +126,13 @@ button {
   max-width: 192rem;
   overflow: hidden;
 }
-
+.modalDialog_p {
+  margin: 0 auto;
+  text-align: center;
+  width: 90%;
+  font-size: 2rem;
+  font-weight: 600;
+}
 .errorDialog_h4 {
   width: 50rem;
 }

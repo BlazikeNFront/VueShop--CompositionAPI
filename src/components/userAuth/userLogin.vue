@@ -35,12 +35,16 @@
           <p v-if="passwordError" class="loginFormControl__errorMsg">
             {{ passwordError }}
           </p>
+          <p v-if="serverErrorMsg" class="loginFormControl__errorMsg">
+            {{ serverErrorMsg }}
+          </p>
         </div>
       </div>
-      <button class="loginFormControl__button">Login</button>
-      <p v-if="serverErrorMsg" class="loginFormControl__errorMsg">
-        {{ serverErrorMsg }}
-      </p>
+      <div class="loginFormControl__buttonContainer">
+        <button>Login</button>
+        <loader class="loginFormControl__loader" v-if="loader"></loader>
+      </div>
+
       <p class="signUpLink">
         U dont have an account? Click
         <span @click="this.$emit('changeView')">Here</span>
@@ -72,6 +76,7 @@ export default {
     const passwordError = ref(null);
     const userNameError = ref(null);
     const serverErrorMsg = ref(null);
+    const loader = ref(false);
 
     function clearErrors() {
       passwordError.value = null;
@@ -80,12 +85,15 @@ export default {
     }
 
     async function handleLogin() {
-      if (userPassword.value === null || "") {
+      loader.value = true;
+      if (userPassword.value === null || userPassword.value === "") {
         passwordError.value = "Please insert password";
+        loader.value = false;
         return;
       }
       if (userName.value === null || userName.value.split("").length < 5) {
         userNameError.value = "Please insert correct email";
+        loader.value = false;
         return;
       }
       try {
@@ -94,9 +102,11 @@ export default {
           password: userPassword.value,
         };
         await store.dispatch("UserAuth/handleLogin", payload);
+        loader.value = false;
         router.push({ name: nameToRedirectAfterLoginAction.value });
       } catch (err) {
         console.log(err);
+        loader.value = false;
         serverErrorMsg.value = "Couldn't log in :( Try again later";
       }
     }
@@ -116,6 +126,7 @@ export default {
       serverErrorMsg,
       changeRoute,
       clearErrors,
+      loader,
     };
   },
 };
@@ -174,21 +185,36 @@ export default {
   font-weight: 600;
   color: $red-error;
 }
-.loginFormControl__button {
-  width: 25rem;
-  padding: 0.5rem;
-  background-color: white;
-  border: none;
-  border-radius: 20px;
-  font-family: inherit;
-  font-size: 2.5rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: #2c3e50;
+.loginFormControl__buttonContainer {
+  position: relative;
+  button {
+    width: 25rem;
+    padding: 0.5rem;
+    background-color: white;
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #2c3e50;
+  }
+}
+.loginFormControl__loader {
+  position: absolute;
+  right: -7rem;
+  top: -2rem;
+  transform: scale(0.6);
 }
 .login .login__modalErrorMsg {
   font-size: $font-bg;
   color: $primiary-color;
+}
+@media (min-width: 768px) {
+  .loginFormControl__loader {
+    right: -8rem;
+    transform: scale(0.8);
+  }
 }
 @media (min-width: 1024px) {
   .userAuth__userLogin {
@@ -196,6 +222,16 @@ export default {
     margin: 0;
     width: 50%;
     opacity: 1;
+  }
+  .signUpLink {
+    margin-top: 7rem;
+  }
+  .loginFormControl__loader {
+    top: initial;
+    right: initial;
+    left: 50%;
+    bottom: -8rem;
+    transform: translate(-50%);
   }
 }
 </style>
