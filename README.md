@@ -2,4 +2,4 @@
 ```
 FrontEnd - VUE 3 / VUEX / VUE ROUTER /SCSS
 ```
-[link to Google!](https://taimenshopcomposition.web.app/)
+[LIVE](https://taimenshopcomposition.web.app/)
