@@ -1,7 +1,7 @@
 <template>
   <section class="productDetails">
     <loader v-if="!product"></loader>
-    <div class="productDetails_productBox" v-else>
+    <article class="productDetails_productBox" v-else>
       <img
         :src="product.imagePath.large"
         :alt="product.name + 'image'"
@@ -34,7 +34,7 @@
           </transition>
         </div>
       </form>
-    </div>
+    </article>
   </section>
 </template>
 <script>
