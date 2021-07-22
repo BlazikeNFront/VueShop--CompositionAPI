@@ -100,23 +100,15 @@ export default {
 
 .dropDown-enter-active,
 .dropDown-leave-active {
-  transition: all 0.2s linear;
+  transition: all 0.5s ease-out;
 }
 
 .dropDown-enter-from,
 .dropDown-leave-to {
-  height: 0rem;
+  max-height: 0;
 }
 .dropDown-enter-to,
 .dropDown-leave-from {
-  height: 20rem;
-}
-@media (min-width: 768px) {
-  .dropDown-enter-active {
-    transition: all 0.2s linear;
-  }
-  .dropDown-leave-active {
-    transition: all 0.2s linear;
-  }
+  max-height: 70rem;
 }
 </style>

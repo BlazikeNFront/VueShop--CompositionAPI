@@ -6,7 +6,7 @@
         <p class="sliderContainer__para sliderContainer__para--normal">RODS</p>
         <img
           class="sliderItem_visible"
-          src="../../../assets/img/rodCategoryImage.jpg"
+          src="../../../assets/img/rodCategoryImage.webp"
           alt="picture of fishing rod"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">RODS</p>
@@ -22,7 +22,7 @@
         </div>
         <img
           class="sliderItem1"
-          src="../../../assets/img/reelsCategoryImage.jpg"
+          src="../../../assets/img/reelsCategoryImage.webp"
           alt="picture of fishing reel"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">REELS</p>
@@ -38,7 +38,7 @@
         </div>
         <img
           class="sliderItem1"
-          src="../../../assets/img/luresCategoryImage.jpg"
+          src="../../../assets/img/luresCategoryImage.webp"
           alt="picture of fishing reel"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">LURES</p>
@@ -54,7 +54,7 @@
         </div>
         <img
           class="sliderItem1"
-          src="../../../assets/img/lineCategoryImage.jpg"
+          src="../../../assets/img/lineCategoryImage.webp"
           alt="picture of fishing reel"
         />
         <p class="sliderContainer__para sliderContainer__para--hover">LINES</p>

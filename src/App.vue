@@ -10,8 +10,7 @@
     </main>
     <footer-component></footer-component>
     <modal-dialog v-if="this.userActionModal" @closeDialog="this.closeModal">
-      <h4 class="errorDialog_h4">Error occured :(</h4>
-      <p class="errorDialog_p">{{ this.userActionModalMsg }}</p>
+      <p class="modalDialog_p">{{ this.userActionModalMsg }}</p>
     </modal-dialog>
   </div>
 </template>
@@ -130,11 +129,7 @@ button {
   margin: 0 auto;
   text-align: center;
   width: 90%;
-  font-size: 2rem;
-  font-weight: 600;
-}
-.errorDialog_h4 {
-  width: 50rem;
+  font-size: 1.6rem;
 }
 
 .pageChange-enter-active,

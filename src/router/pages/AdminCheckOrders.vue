@@ -8,14 +8,12 @@
       @orderStatusChanged="fetchOrdersAsAdmin(currentPage)"
     ></user-orders-table>
     <p v-else>There is no orders</p>
-    <loader v-if="loader"></loader>
-
-    <button
-      class="userOrders--adminView__button"
-      @click="fetchOrdersAsAdmin(currentPage)"
-    >
-      FETCH ORDERS
-    </button>
+    <div class="userOrder_submitContainer">
+      <loader class="userOrder__loader" v-if="loader"></loader>
+      <button class="userOrder__updateButton" @click="updateOrders(true)">
+        FETCH ORDERS
+      </button>
+    </div>
 
     <pagination-buttons
       class="searchResult__paginationButtons"
@@ -48,6 +46,7 @@ export default {
       currentPage,
       handleChangePageRequest,
       fetchOrdersAsAdmin,
+      updateOrders,
     } = useUserOrders();
 
     onMounted(() => {
@@ -61,16 +60,12 @@ export default {
       currentPage,
       handleChangePageRequest,
       fetchOrdersAsAdmin,
+      updateOrders,
     };
   },
 };
 </script>
-<style lang="scss">
-.userOrders--adminView__button {
-  @include button;
-  margin: 1rem;
-  padding: 1rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
+<style lang='scss'>
+
 </style>
+

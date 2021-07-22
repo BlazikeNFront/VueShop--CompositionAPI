@@ -39,16 +39,15 @@ export default {
   @include centerAbsolute;
   @include flexLayout;
   position: fixed;
-  width: 90%;
-  max-width: 135rem;
-  height: clamp(50rem, 80%, 80rem);
+  width: clamp(30rem, 80%, 70rem);
+  height: clamp(30rem, 90%, 70rem);
   border: 2px solid $primiary-color;
   border-radius: 10px;
   background-color: #d9e4f5;
   background-image: linear-gradient(315deg, #d9e4f5 0%, #f5e3e6 74%);
   flex-direction: column;
   z-index: $modal-dialog;
-  overflow: hidden;
+  overflow: scroll;
 }
 .backdrop {
   z-index: $modal-dialog;
@@ -65,5 +64,10 @@ export default {
   padding: 0.5rem 1rem;
   font-size: 2rem;
   font-weight: 600;
+}
+@media (min-width: 1024px) {
+  .modalDialog {
+    overflow: initial;
+  }
 }
 </style>

@@ -6,7 +6,7 @@
         <div class="userCart__arrowForMobile" v-if="!userOrderClick">
           <font-awesome-icon :icon="['fa', 'arrow-right']"></font-awesome-icon>
         </div>
-        <ul class="userCart__productList orderDetails__productList">
+        <ul class="userCart__productList userCart__productList--admin">
           <li class="userCart__product userCart__product--tableDescription">
             <span></span>
             <h5 class="userCart__columnDescription">Product name</h5>
@@ -64,7 +64,6 @@
         v-if="changeOrderStatus"
         class="orderStatusForm"
         @submit.prevent="handleChangeOrderStatus(order._id)"
-        @click="clearMessage"
       >
         <p class="orderStatusForm__p">Change order Status:</p>
         <div class="orderStatusForm__formControl" v-if="order.status !== '1'">
@@ -92,8 +91,11 @@
         <button class="orderStatusForm__button">Submit change</button>
         <loader class="orderStatusForm__loader" v-if="loader"></loader>
       </form>
-      <div class="orderStatus__notifcation" v-if="this.orderDeatilsModalMsg">
-        <p v-if="orderStatusChangedResult">{{ orderStatusChangedResult }}</p>
+      <div
+        class="orderStatus__notifcation"
+        v-if="this.orderStatusChangedResult"
+      >
+        <p>{{ orderStatusChangedResult }}</p>
         <button @click="clearModal">OK</button>
       </div>
     </modal-dialog>
@@ -101,7 +103,7 @@
 </template>
 <script>
 import { ref } from "vue";
-import { useStore } from "vuex";
+
 import useToken from "../hooks/logger.js";
 import useHeaderHook from "../hooks/createHeaders.js";
 export default {
@@ -117,7 +119,6 @@ export default {
 
   emits: ["orderStatusChanged", "closeModal"],
   setup(props, context) {
-    const store = useStore();
     const { token } = useToken();
     const { createHeaders } = useHeaderHook();
 
@@ -132,7 +133,7 @@ export default {
     function setUserOrderClick() {
       userOrderClick.value = true;
     }
-    function clearMessage() {
+    function clearModal() {
       orderStatusChangedResult.value = null;
     }
     function summaryCost() {
@@ -142,9 +143,7 @@ export default {
       }, 0);
       return summaryCost.toFixed(2);
     }
-    function clearModal() {
-      this.orderDeatilsModalMsg = null;
-    }
+
     async function handleChangeOrderStatus(orderId) {
       try {
         if (!orderDetailsStatus.value) {
@@ -160,7 +159,7 @@ export default {
           orderStatus: orderDetailsStatus.value,
         };
         const response = await fetch(
-          `http://localhost:3000/admin/changeOrderStatus`,
+          `https://vueshopcompback.herokuapp.com/admin/changeOrderStatus`,
           {
             method: "POST",
             headers: requestHeaders,
@@ -168,19 +167,18 @@ export default {
             credentials: "include",
           }
         );
-        if (response.status !== 200) {
-          throw new Error("Server did not accepted change of order");
-        } else {
+        if (response.status === 200) {
           loader.value = false;
           orderStatusChangedResult.value = "Order Status Changed";
           context.emit("orderStatusChanged");
+        } else {
+          throw new Error("Server did not accepted change of order");
         }
       } catch (err) {
         console.log(err);
         loader.value = false;
-        orderDeatilsModalMsg.value = err.message;
-        orderStatusChangedResult.value = "Couldnt Changed order Status";
-        store.dispatch("ModalHandler/showModal", err.message);
+
+        orderStatusChangedResult.value = err.message;
       }
     }
     return {
@@ -192,7 +190,7 @@ export default {
       loader,
       userOrderClick,
       setUserOrderClick,
-      clearMessage,
+
       clearModal,
       orderStatusChangedResult,
     };
@@ -206,12 +204,10 @@ export default {
 
 .orderDetailsView__h4 {
   font-size: 2rem;
-  text-align: center;
 }
 .orderDetailsView__h5 {
   margin-top: 1rem;
   font-size: 1.5rem;
-  text-align: center;
 }
 .orderDetails__productList {
   margin: 1rem auto;
@@ -221,10 +217,10 @@ export default {
 }
 
 .orderDetails__listContainer {
+  position: relative;
   width: 100%;
   height: 100%;
   min-height: 20rem;
-  position: relative;
   overflow: scroll;
 }
 
@@ -237,7 +233,6 @@ export default {
   @include flexLayout;
   width: 100%;
   height: 3rem;
-
   justify-content: center;
 }
 .orderDetailsView__userInformation {
@@ -281,7 +276,7 @@ export default {
   color: black;
 }
 .orderStatusForm__p {
-  margin-right: 1rem;
+  text-align: center;
   font-size: 1.6rem;
   color: black;
 }
@@ -297,7 +292,10 @@ export default {
   color: white;
 }
 .orderStatusForm__loader {
-  transform: scale(0.5);
+  position: absolute;
+  bottom: -6rem;
+  left: 52%;
+  transform: translate(-50%) scale(0.6);
 }
 .orderStatus__notifcation {
   @include centerAbsolute;
@@ -325,7 +323,17 @@ export default {
     font-size: 2rem;
   }
 }
-
+@media (min-width: 768px) {
+  .orderStatusForm__p {
+    margin-right: 1rem;
+  }
+  .orderStatusForm__loader {
+    position: absolute;
+    bottom: -6rem;
+    left: 50%;
+    transform: translate(-50%) scale(0.6);
+  }
+}
 @media (min-width: 1024px) {
   .orderDetails__listContainer {
     overflow: initial;

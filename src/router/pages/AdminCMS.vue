@@ -30,7 +30,7 @@ export default {
   width: 90%;
   height: 100%;
   max-width: 135rem;
-  min-height: 60rem;
+  min-height: 30rem;
 }
 .adminCMS__h3 {
   margin: 3rem;

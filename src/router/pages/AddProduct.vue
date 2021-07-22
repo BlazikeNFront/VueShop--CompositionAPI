@@ -10,7 +10,7 @@
       <div class="addProduct__formControl">
         <div class="addProduct__formControl__inputBox">
           <p class="form-addProduct__para">Select type of product:</p>
-          <div class="addProduct__formControl__radioInput">
+          <div class="addProduct__formControl__radioInput" id="typeOfProduct">
             <input
               id="rod"
               type="radio"
@@ -78,7 +78,10 @@
       <div class="addProduct__formControl">
         <div class="addProduct__formControl__inputBox">
           <p class="form-addProduct__para">Select category of product:</p>
-          <div class="addProduct__formControl__radioInput">
+          <div
+            class="addProduct__formControl__radioInput"
+            id="categoryOfProduct"
+          >
             <input
               id="spinning"
               type="radio"
@@ -140,12 +143,20 @@
           </div>
         </div>
 
-        <p class="addProduct__errorMsg" v-if="formInputs.typeOfProduct.error">
-          {{ formInputs.typeOfProduct.errorMsg }}
+        <p
+          class="addProduct__errorMsg"
+          v-if="formInputs.categoryOfProduct.error"
+        >
+          {{ formInputs.categoryOfProduct.errorMsg }}
         </p>
       </div>
-      <div class="addProduct__formControl">
-        <div class="addProduct__formControl__inputBox">
+      <div class="addProduct__formControl" id="nameOfProduct">
+        <div
+          class="
+            addProduct__formControl__inputBox
+            addProduct__formControl__inputBox--marginBottom
+          "
+        >
           <label
             class="addProduct__formControl__lables"
             for="addProduct__productTile"
@@ -164,7 +175,13 @@
         </p>
       </div>
       <div class="addProduct__formControl">
-        <div class="addProduct__formControl__inputBox">
+        <div
+          class="
+            addProduct__formControl__inputBox
+            addProduct__formControl__inputBox--marginBottom
+          "
+          id="descriptionOfProduct"
+        >
           <label class="addProduct__formControl__lables" for="desc"
             >Enter description of product:</label
           >
@@ -182,7 +199,7 @@
         </p>
       </div>
       <div class="addProduct__formControl">
-        <div class="addProduct__formControl__inputBox">
+        <div class="addProduct__formControl__inputBox" id="productPrice">
           <label class="addProduct__formControl__lables" for="price">
             Price:</label
           >
@@ -202,7 +219,13 @@
         </p>
       </div>
       <div class="addProduct__formControl">
-        <div class="addProduct__formControl__inputBox">
+        <div
+          class="
+            addProduct__formControl__inputBox
+            addProduct__formControl__inputBox--marginBottom
+          "
+          id="productQuantitiy"
+        >
           <label class="addProduct__formControl__lables" for="quantity">
             Quantity:</label
           >
@@ -237,7 +260,7 @@
           />
         </div>
         <p class="addProduct__errorMsg" v-if="formInputs.image.error">
-          {{ formInputs.image.error.errorMsg }}
+          {{ formInputs.image.errorMsg }}
         </p>
       </div>
       <div class="addProduct__submitContainer">
@@ -279,7 +302,10 @@ export default {
       quantity: { value: null, error: false, errorMsg: null },
       image: { value: null, error: false, errorMsg: null },
     });
-
+    function scrollToElement(idOfElement) {
+      const element = document.getElementById(idOfElement);
+      element.scrollIntoView();
+    }
     function closeModal() {
       formRequestConfirmation.visible = false;
       formRequestConfirmation.text = null;
@@ -299,17 +325,21 @@ export default {
       } = formInputs;
 
       if (typeOfProduct.value === null) {
+        scrollToElement("typeOfProduct");
         formInputs.typeOfProduct.error = true;
         formInputs.typeOfProduct.errorMsg = "U need to pick a type of product";
         return false;
       }
+
       if (categoryOfProduct.value === null) {
+        scrollToElement("categoryOfProduct");
         formInputs.categoryOfProduct.error = true;
         formInputs.categoryOfProduct.errorMsg =
           "U need to pick a category of product";
         return false;
       }
       if (name.value === null || name.value.length < 5) {
+        scrollToElement("nameOfProduct");
         formInputs.name.error = true;
         formInputs.name.errorMsg = "Name should contaitn at least 5 characters";
         return false;
@@ -318,12 +348,16 @@ export default {
         descritpion.value === null ||
         descritpion.value.split(" ").length < 20
       ) {
+        scrollToElement("descriptionOfProduct");
+
         formInputs.descritpion.error = true;
         formInputs.descritpion.errorMsg =
           "Descritpion should contain at least 20 words";
         return false;
       }
       if (price.value === null || price.value < 0) {
+        scrollToElement("productPrice");
+
         formInputs.price.error = true;
         formInputs.price.errorMsg = "Price is not provided";
         return false;
@@ -334,6 +368,7 @@ export default {
         quantity.value < 0 ||
         !Number.isInteger(Number(quantity.value))
       ) {
+        scrollToElement("productQuantitiy");
         formInputs.quantity.error = true;
         formInputs.quantity.errorMsg = "Quantity number must be integer";
         return false;
@@ -366,7 +401,7 @@ export default {
       product.append("price", price.value);
       product.append("quantity", quantity.value);
       product.append("image", image.value);
-      console.log(product);
+
       if (formValidation === true) {
         addProduct(product);
       }
@@ -380,12 +415,15 @@ export default {
         if (token.value) {
           requestHeaders.append("Authorization", `Bearer ${token.value}`);
         }
-        const response = await fetch("http://localhost:3000/admin/addProduct", {
-          method: "POST",
-          headers: requestHeaders,
-          body: product,
-          credentials: "include",
-        });
+        const response = await fetch(
+          "https://vueshopcompback.herokuapp.com/admin/addProduct",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: product,
+            credentials: "include",
+          }
+        );
         if (response.status !== 200) {
           throw new Error();
         }
@@ -439,10 +477,8 @@ export default {
   padding: 2rem;
   width: 95%;
   height: 80%;
-
   flex-direction: column;
   font-size: $font-md;
-
   color: black;
   font-weight: 600;
 
@@ -465,6 +501,9 @@ export default {
   margin: 1rem;
   flex-direction: column;
 }
+.addProduct__formControl__inputBox--marginBottom {
+  margin-bottom: 2rem;
+}
 .addProduct__formControl__radioInput {
   @include flexLayout;
   margin: 0.5rem;
@@ -485,9 +524,7 @@ export default {
 .form-addProduct__button {
   @include button;
   padding: 0.5rem 1rem;
-
   font-size: 2rem;
-
   font-weight: 600;
   color: white;
 }
@@ -497,9 +534,10 @@ export default {
 .addProduct__errorMsg {
   position: absolute;
   bottom: 0;
-  width: 150%;
+  width: 100%;
   font-size: $font-sm;
-  color: red;
+  color: #b50909;
+  font-weight: 600;
 }
 .addProduct__modalText {
   font-size: $font-bg;

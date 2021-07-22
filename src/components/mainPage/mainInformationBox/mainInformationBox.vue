@@ -5,10 +5,10 @@
         <img src="../../../assets/img/savagearLogo.png" alt="savagear logo" />
 
         <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
+          At Taimen, we like to offer you the very best – and when it comes to
+          predator fishing, Savage Gear is one of the most respected and revered
+          brands in the world. Their equipment is designed for targeting any
+          large predator fish, but with an emphasis on pike, perch and zander.
         </p>
         <router-link :to="redirectToSearchPage">
           CLICK HERE TO CHECK IT OUT
@@ -55,7 +55,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   background-color: rgba(0, 0, 0, 1);
-  background-image: url("../../../assets/img/mainInformationBoxPicure.jpg");
+  background-image: url("../../../assets/img/mainInformationBoxPicure.webp");
   background-position-y: 7rem;
   background-size: contain;
   background-repeat: no-repeat;

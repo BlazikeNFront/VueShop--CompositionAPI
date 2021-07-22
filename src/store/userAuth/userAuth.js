@@ -50,7 +50,7 @@ export default {
         };
 
         userDataJSON().then((userDataJSON) => {
-          fetch("http://localhost:3000/userAuth", {
+          fetch("https://vueshopcompback.herokuapp.com/userAuth", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: userDataJSON,
@@ -58,7 +58,9 @@ export default {
           })
             .then((data) => {
               if (data.status !== 200) {
-                throw data;
+                const error = new Error();
+                error.status = data.status;
+                throw error;
               } else {
                 return data.json();
               }
@@ -95,11 +97,14 @@ export default {
     },
     async authUserWithCookie(context) {
       try {
-        const response = await fetch("http://localhost:3000/authWithCookie", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+        const response = await fetch(
+          "https://vueshopcompback.herokuapp.com/authWithCookie",
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          }
+        );
         const dataJSON = await response.json();
         const tokenPayload = dataJSON.token;
         context.commit("handleLogin", tokenPayload);
@@ -121,10 +126,13 @@ export default {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
 
-        const rawData = await fetch("http://localhost:3000/getUserAddresses", {
-          headers: requestHeaders,
-          credentials: "include",
-        });
+        const rawData = await fetch(
+          "https://vueshopcompback.herokuapp.com/getUserAddresses",
+          {
+            headers: requestHeaders,
+            credentials: "include",
+          }
+        );
 
         if (rawData.status !== 200) {
           throw new Error("Server couldnt fetch user address");
@@ -168,7 +176,7 @@ export default {
         };
 
         const responseFromServer = await fetch(
-          "http://localhost:3000/updateDefaultUserAddress",
+          "https://vueshopcompback.herokuapp.com/updateDefaultUserAddress",
           {
             method: "POST",
             headers: requestHeaders,

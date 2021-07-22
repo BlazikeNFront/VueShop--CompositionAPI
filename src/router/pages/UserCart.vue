@@ -94,7 +94,6 @@ export default {
     const userConfirmationDialog = ref(
       route.params.showConfirmOrderDialog || false
     );
-
     const userCartClick = ref(false);
     const { token } = useToken();
 
@@ -159,7 +158,7 @@ export default {
 .userCart {
   @include basicCart;
   margin: 1rem;
-  min-height: 60rem;
+  min-height: 30rem;
 
   h2 {
     padding: 2rem;
@@ -177,7 +176,9 @@ export default {
   border-radius: 10px;
   overflow-x: scroll;
 }
-
+.userCart__productList--admin {
+  margin: 2rem auto;
+}
 .userCart__columnDescription {
   margin: auto;
   font-weight: 600;
@@ -256,12 +257,12 @@ export default {
   @include flexLayout;
   height: 100%;
   justify-content: center;
-
+  text-align: center;
   font-weight: 600;
 }
 .userCart__productImage {
   margin: 0 auto;
-  width: 100%;
+  width: 12.8rem;
 }
 
 .userCart__summaryPrice {

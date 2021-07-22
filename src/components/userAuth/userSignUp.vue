@@ -67,15 +67,6 @@
         to Log in !
       </p>
     </form>
-
-    <modal-dialog
-      v-if="dialogModal.type"
-      @closeDialog="closeErrorModal"
-      @confirmError="closeErrorModal"
-      ><p class="signUpForm__errorMsg">
-        {{ dialogModal.msg }}
-      </p>
-    </modal-dialog>
   </div>
 </template>
 <script>
@@ -88,7 +79,7 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const createHeaders = useHeaderHook();
+    const { createHeaders } = useHeaderHook();
     const email = ref(null);
     const userPassword = ref(null);
     const confirmPassword = ref(null);
@@ -97,10 +88,6 @@ export default {
       userNameErrorMsg: null,
     });
     const loader = ref(false);
-    const dialogModal = reactive({
-      type: null,
-      msg: null,
-    });
 
     function clearErrors() {
       formErrors.passwordErrorMsg = null;
@@ -109,39 +96,6 @@ export default {
     function closeForm() {
       router.push("/");
     }
-    async function handleSignUp() {
-      if (checkForm() === false) {
-        return;
-      }
-      try {
-        loader.value = true;
-        const userData = {
-          email: email.value,
-          password: userPassword.value,
-        };
-        const requestHeaders = createHeaders();
-        const data = await fetch("http://localhost:3000/SignUp", {
-          method: "POST",
-          headers: requestHeaders,
-          body: await JSON.stringify(userData),
-        });
-        const dataJSON = await data.json();
-
-        if (data.status !== 200) {
-          dialogModal.type = "error";
-          dialogModal.msg = dataJSON.message;
-          loader.value = false;
-          return;
-        }
-        dialogModal.type = "confirmation";
-        dialogModal.msg = dataJSON.message;
-        loader.value = false;
-      } catch (err) {
-        loader.value = false;
-        store.dispatch("ModalHandler/showModal", err.message);
-      }
-    }
-
     function checkForm() {
       const regexForEmail =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -165,15 +119,48 @@ export default {
 
         return false;
       }
-      formErrors.userNameErrorMsg = null;
-      formErrors.passwordErrorMsg = null;
+      clearErrors();
     }
-    function closeErrorModal() {
-      if (dialogModal.type === "confirmation") {
-        router.push("/");
+    async function handleSignUp() {
+      if (checkForm() === false) {
+        return;
       }
-      dialogModal.type = null;
-      dialogModal.msg = null;
+      try {
+        loader.value = true;
+        const userData = {
+          email: email.value,
+          password: userPassword.value,
+        };
+        const requestHeaders = createHeaders();
+        const data = await fetch(
+          "https://vueshopcompback.herokuapp.com/SignUp",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: await JSON.stringify(userData),
+          }
+        );
+
+        if (data.status === 409) {
+          store.dispatch(
+            "ModalHandler/showModal",
+            "Account with that email address already exist"
+          );
+          loader.value = false;
+          return;
+        } else if (data.status !== 200) {
+          throw new Error("Couldn't sign up, try again later");
+        }
+        this.loader = false;
+        store.dispatch(
+          "ModalHandler/showModal",
+          "Account Created, You can now log in"
+        );
+        router.push({ path: "/User/login" });
+      } catch (err) {
+        loader.value = false;
+        store.dispatch("ModalHandler/showModal", err.message);
+      }
     }
 
     return {
@@ -181,12 +168,10 @@ export default {
       userPassword,
       confirmPassword,
       formErrors,
-      dialogModal,
       loader,
       closeForm,
       clearErrors,
       handleSignUp,
-      closeErrorModal,
     };
   },
 };
@@ -215,6 +200,16 @@ export default {
 }
 .loginFormControl__button--signUp {
   margin-top: 2rem;
+  width: 25rem;
+  padding: 0.5rem;
+  background-color: white;
+  border: none;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 2.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #2c3e50;
 }
 .signUpForm__modal {
   p {

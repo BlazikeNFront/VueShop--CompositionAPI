@@ -143,12 +143,15 @@ export default {
           },
         };
 
-        const rawData = await fetch("http://localhost:3000/confirmOrder", {
-          method: "POST",
-          headers: requestHeaders,
-          body: await JSON.stringify(payload),
-          credentials: "include",
-        });
+        const rawData = await fetch(
+          "https://vueshopcompback.herokuapp.com/confirmOrder",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: await JSON.stringify(payload),
+            credentials: "include",
+          }
+        );
 
         if (rawData.status === 406) {
           const data = await rawData.json();
@@ -250,6 +253,9 @@ export default {
 
     font-size: 4rem;
   }
+}
+.orderResultBox__resultInformation {
+  display: flex;
 }
 .orderResultBox__confirmButton {
   @include button;

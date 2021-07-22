@@ -8,14 +8,13 @@
       :admin="false"
     ></user-orders-table>
     <p v-else>There is no history of orders</p>
-    <loader v-if="loader"></loader>
+    <div class="userOrder_submitContainer">
+      <loader class="userOrder__loader" v-if="loader"></loader>
 
-    <button
-      class="userOrder__updateButton"
-      @click="fetchOrdersAsUser(currentPage)"
-    >
-      Update orders
-    </button>
+      <button class="userOrder__updateButton" @click="updateOrders()">
+        Update orders
+      </button>
+    </div>
     <pagination-buttons
       class="searchResult__paginationButtons"
       :numberOfPages="numberOfPages"
@@ -41,6 +40,7 @@ export default {
       currentPage,
       handleChangePageRequest,
       fetchOrdersAsUser,
+      updateOrders,
     } = useUserOrders();
     onMounted(() => {
       fetchOrdersAsUser(currentPage);
@@ -52,6 +52,7 @@ export default {
       currentPage,
       handleChangePageRequest,
       fetchOrdersAsUser,
+      updateOrders,
     };
   },
   components: { UserOrdersTable, PaginationButtons },
@@ -62,10 +63,18 @@ export default {
   @include basicCart;
   margin: 3rem;
   min-height: 60rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   h2 {
     padding: 3rem;
   }
+}
+.userOrder_submitContainer {
+  position: relative;
+  margin: 0 auto;
+  width: 20rem;
 }
 .userOrder__updateButton {
   @include button;
@@ -75,6 +84,11 @@ export default {
   &:hover {
     color: #2c3e50;
   }
+}
+.userOrder__loader {
+  position: absolute;
+  right: -4rem;
+  transform: scale(0.75);
 }
 @media (min-width: 1024px) {
   .userOrders {

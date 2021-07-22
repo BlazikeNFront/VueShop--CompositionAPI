@@ -7,7 +7,12 @@
       <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon>
     </button>
     <div>
-      <p v-if="userAddressList.length === 0">Theres is no saved addresses.</p>
+      <p
+        class="addAddressBox__noAddressessNotification"
+        v-if="userAddressList.length === 0"
+      >
+        Theres is no saved addresses.
+      </p>
       <drop-down
         v-else
         class="addAddress__dropdown"
@@ -165,7 +170,7 @@ export default {
       ) {
         newAddressForm.address.error = true;
         formErrorMsg.value =
-          "Surname field should contain at least 5 characters and also not contain special signs like ?,&";
+          "Address field should contain at least 5 characters and also not contain special signs like ?,&";
         return false;
       }
     }
@@ -184,12 +189,15 @@ export default {
 
         const requestHeaders = createHeaders(token.value);
 
-        const postResult = await fetch("http://localhost:3000/addUserAddress", {
-          method: "POST",
-          headers: requestHeaders,
-          body: await JSON.stringify(payload),
-          credentials: "include",
-        });
+        const postResult = await fetch(
+          "https://vueshopcompback.herokuapp.com/addUserAddress",
+          {
+            method: "POST",
+            headers: requestHeaders,
+            body: await JSON.stringify(payload),
+            credentials: "include",
+          }
+        );
         if (postResult.status !== 200) {
           formLoader.value = false;
           throw new Error("Server did not accepted address");
@@ -253,6 +261,9 @@ export default {
     text-align: center;
   }
 }
+.addAddressBox__noAddressessNotification {
+  margin-top: 1.5rem;
+}
 .confirmationBox__form {
   @include flexLayout;
   position: relative;
@@ -278,12 +289,15 @@ export default {
   margin: 0rem auto;
   margin-top: 2rem;
   width: 100%;
-  height: 5rem;
   border-radius: 20px 20px 0 0;
   color: white;
 
   .customSelect {
+    padding: 1rem 1.5rem;
     width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    cursor: pointer;
     z-index: $addAddressDropDown;
     p {
       width: 100%;
@@ -300,8 +314,8 @@ export default {
     position: absolute;
     top: 4rem;
     left: 0;
-    width: 100%;
     margin: 0 auto;
+    width: 100%;
     border-radius: 0 0 20px 20px;
     background-color: $main-color;
     text-align: center;

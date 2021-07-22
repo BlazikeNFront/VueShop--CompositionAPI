@@ -37,10 +37,13 @@ export default {
         if (token) {
           requestHeaders.append("Authorization", `Bearer ${token}`);
         }
-        const rawData = await fetch("http://localhost:3000/getUserCart", {
-          headers: requestHeaders,
-          credentials: "include",
-        });
+        const rawData = await fetch(
+          "https://vueshopcompback.herokuapp.com/getUserCart",
+          {
+            headers: requestHeaders,
+            credentials: "include",
+          }
+        );
         if (rawData.status !== 200) {
           throw new Error("Server couldnt update the cart");
         }
@@ -109,9 +112,7 @@ export default {
       try {
         const cart = context.getters["getCart"];
         const token = context.rootGetters["UserAuth/getToken"];
-        if (!token) {
-          return;
-        }
+
         const requestHeaders = new Headers();
         requestHeaders.append("Content-Type", "application/json");
         if (token) {
@@ -121,7 +122,7 @@ export default {
           cart,
         };
         const updateCartResult = await fetch(
-          "http://localhost:3000/updateUserCart",
+          "https://vueshopcompback.herokuapp.com/updateUserCart",
           {
             method: "POST",
             headers: requestHeaders,

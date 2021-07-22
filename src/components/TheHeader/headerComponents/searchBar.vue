@@ -152,7 +152,6 @@ export default {
 
   .customSelect {
     @include flexLayout;
-    position: relative;
     padding: 1rem 1.5rem;
     height: 100%;
     border-radius: inherit;

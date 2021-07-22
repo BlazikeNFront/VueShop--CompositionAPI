@@ -59,6 +59,7 @@ export default function useUserOrders() {
   }
   async function fetchOrdersAsUser(page) {
     try {
+      loader.value = true;
       const requestHeaders = new Headers();
       requestHeaders.append("Content-Type", "application/json");
       if (token.value) {
@@ -66,7 +67,7 @@ export default function useUserOrders() {
       }
 
       const rawData = await fetch(
-        `http://localhost:3000/getUserOrders?page=${page}`,
+        `https://vueshopcompback.herokuapp.com/getUserOrders?page=${page}`,
         {
           headers: requestHeaders,
           credentials: "include",
@@ -83,13 +84,16 @@ export default function useUserOrders() {
       const { data, totalItems } = ordersData;
       numberOfPages.value = Math.ceil(totalItems / 10);
       orders.value = data;
+      loader.value = false;
     } catch (err) {
       console.log(err);
+      loader.value = false;
       store.dispatch("ModalHandler/showModal", err.message);
     }
   }
   async function fetchOrdersAsAdmin(page) {
     try {
+      loader.value = true;
       const requestHeaders = new Headers();
       requestHeaders.append("Content-Type", "application/json");
 
@@ -97,7 +101,7 @@ export default function useUserOrders() {
         requestHeaders.append("Authorization", `Bearer ${token.value}`);
       }
       const rawData = await fetch(
-        `http://localhost:3000/admin/getOrders?page=${page}`,
+        `https://vueshopcompback.herokuapp.com/admin/getOrders?page=${page}`,
         {
           headers: requestHeaders,
           credentials: "include",
@@ -112,9 +116,20 @@ export default function useUserOrders() {
       const { data, totalItems } = ordersData;
       numberOfPages.value = Math.ceil(totalItems / 10);
       orders.value = data;
+      loader.value = false;
     } catch (err) {
       console.log(err);
+      loader.value = false;
       store.dispatch("ModalHandler/showModal", err.message);
+    }
+  }
+  function updateOrders(admin = false) {
+    if (admin === true) {
+      fetchOrdersAsAdmin(1);
+      router.push({ name: "admin-orders", query: { page: 1 } });
+    } else {
+      fetchOrdersAsUser(1);
+      router.push({ name: "user-orders", query: { page: 1 } });
     }
   }
   return {
@@ -131,6 +146,7 @@ export default function useUserOrders() {
     getOrderStatus,
     calculateValue,
     fetchOrdersAsUser,
+    updateOrders,
     fetchOrdersAsAdmin,
   };
 }

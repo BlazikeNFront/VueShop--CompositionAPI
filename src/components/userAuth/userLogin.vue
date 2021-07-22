@@ -86,16 +86,17 @@ export default {
 
     async function handleLogin() {
       loader.value = true;
-      if (userPassword.value === null || userPassword.value === "") {
-        passwordError.value = "Please insert password";
-        loader.value = false;
-        return;
-      }
       if (userName.value === null || userName.value.split("").length < 5) {
         userNameError.value = "Please insert correct email";
         loader.value = false;
         return;
       }
+      if (userPassword.value === null || userPassword.value === "") {
+        passwordError.value = "Please insert password";
+        loader.value = false;
+        return;
+      }
+
       try {
         const payload = {
           userName: userName.value,
@@ -105,9 +106,14 @@ export default {
         loader.value = false;
         router.push({ name: nameToRedirectAfterLoginAction.value });
       } catch (err) {
-        console.log(err);
         loader.value = false;
-        serverErrorMsg.value = "Couldn't log in :( Try again later";
+        if (err.status === 404) {
+          serverErrorMsg.value = "User with that email does not exist";
+        } else if (err.status === 403) {
+          serverErrorMsg.value = "Incorrect password";
+        } else {
+          serverErrorMsg.value = "Couldnt authenticate user :( Try again later";
+        }
       }
     }
 
@@ -171,7 +177,7 @@ export default {
 }
 .signUpLink {
   margin: 3rem;
-  font-size: 1.5rem;
+  font-size: 2rem;
   span {
     font-size: 2rem;
     font-weight: 600;
@@ -202,9 +208,9 @@ export default {
 }
 .loginFormControl__loader {
   position: absolute;
-  right: -7rem;
+  right: -6rem;
   top: -2rem;
-  transform: scale(0.6);
+  transform: scale(0.5);
 }
 .login .login__modalErrorMsg {
   font-size: $font-bg;

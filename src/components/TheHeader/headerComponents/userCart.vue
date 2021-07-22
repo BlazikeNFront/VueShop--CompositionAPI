@@ -168,6 +168,9 @@ export default {
 .cartContainer__productDesc {
   @include flexLayout;
   width: 100%;
+  img {
+    width: 12.8rem;
+  }
 }
 .cartContainer__deleteProductButton {
   @include buttonTransparent;

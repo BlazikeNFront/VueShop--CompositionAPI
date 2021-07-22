@@ -13,7 +13,7 @@
           <router-link to="/">TAIMEN Support</router-link>
         </li>
         <li class="footerSingleList__listElement">
-          <p>Terms and condition</p>
+          <router-link to="/">Terms and condition</router-link>
         </li>
       </ul>
     </div>

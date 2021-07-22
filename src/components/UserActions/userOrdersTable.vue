@@ -64,6 +64,7 @@ export default {
       type: Boolean,
     },
   },
+  emits: ["orderStatusChanged"],
   setup(props, context) {
     const selectedOrder = ref(null);
     const showOrderDetails = ref(false);
@@ -100,6 +101,8 @@ export default {
         return "In realization";
       } else if (parseInt(status) === 2) {
         return "Realized";
+      } else {
+        return "Can't get status from server";
       }
     }
     function orderStatusChanged() {
@@ -172,9 +175,8 @@ export default {
   background-color: $main-color;
   border: 1px solid black;
   font-size: 1.5rem;
-
   color: white;
-  h4 {
+  h5 {
     align-self: center;
     font-weight: 600;
   }
