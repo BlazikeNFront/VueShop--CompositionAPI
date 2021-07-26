@@ -7,7 +7,7 @@ Besides user action, it contain admin panel (small CMS) where u can acccept user
 email - admin@kekw.com
 password - admin1234
 
-**Deployed on heroku (also Back-End) - might takie 15-20 seconds in initial request**
+**Deployed on heroku (also Back-End) - might take 15-20 seconds in initial request**
 
 If you already upload something -**PLEASE** don't  upload weird stuff
 
