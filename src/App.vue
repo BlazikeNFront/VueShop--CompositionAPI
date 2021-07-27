@@ -9,47 +9,42 @@
       </router-view>
     </main>
     <footer-component></footer-component>
-    <modal-dialog v-if="this.userActionModal" @closeDialog="this.closeModal">
-      <p class="modalDialog_p">{{ this.userActionModalMsg }}</p>
+    <modal-dialog v-if="this.showModal" @closeDialog="this.closeModal">
+      <p class="modalDialog_p">{{ this.showModalMsg }}</p>
     </modal-dialog>
   </div>
 </template>
 
 <script>
 import TheHeader from "./components/TheHeader/TheHeader.vue";
-import FooterComponent from "./components/footer/footer.vue";
-import { computed, onMounted } from "vue";
-import { useStore } from "vuex";
+import TheFooter from "./components/TheFooter/TheFooter.vue";
+
 export default {
   name: "App",
   components: {
     TheHeader,
-    FooterComponent,
+    TheFooter,
   },
-  setup() {
-    const store = useStore();
-    const userActionModal = computed(() => {
-      return store.getters["ModalHandler/getShowModal"];
-    });
-    const userActionModalMsg = computed(() => {
-      return store.getters["ModalHandler/getModalMsg"];
-    });
-    function closeModal() {
-      store.dispatch("ModalHandler/closeModal");
-    }
-    function checkForToken() {
+  mounted() {
+    this.checkForToken();
+  },
+  computed: {
+    showModal() {
+      return this.$store.getters["ModalHandler/getShowModal"];
+    },
+    showModalMsg() {
+      return this.$store.getters["ModalHandler/getModalMsg"];
+    },
+  },
+  methods: {
+    closeModal() {
+      this.$store.dispatch("ModalHandler/closeModal");
+    },
+    checkForToken() {
       if (document.cookie.split("=")[1] === "true") {
-        store.dispatch("UserAuth/authUserWithCookie");
+        this.$store.dispatch("UserAuth/authUserWithCookie");
       }
-    }
-    onMounted(() => {
-      checkForToken();
-    });
-    return {
-      userActionModal,
-      userActionModalMsg,
-      closeModal,
-    };
+    },
   },
 };
 </script>
@@ -100,6 +95,8 @@ ul {
 button {
   cursor: pointer;
 }
+//code below removies background color from input in chrome after autocomplete
+//code below removies background color from input in chrome after autocomplete
 
 #app {
   background-color: #d9e4f5;
@@ -129,7 +126,11 @@ button {
   margin: 0 auto;
   text-align: center;
   width: 90%;
-  font-size: 1.6rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+.errorDialog_h4 {
+  width: 50rem;
 }
 
 .pageChange-enter-active,
